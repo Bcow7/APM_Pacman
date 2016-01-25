@@ -10,7 +10,7 @@
 void BDD_clear() {
 	unsigned char n;
 	unsigned int address;
-
+/*---*/
 	address = T6963C_calculateAddress(BDD_SCREEN_X - 1, BDD_SCREEN_Y - 1);
 	T6963C_autoRepeat(address, 0x03, BDD_SCREEN_WIDTH + 2);
 
