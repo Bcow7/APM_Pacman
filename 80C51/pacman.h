@@ -5,6 +5,7 @@
 #include "main.h"
 
 typedef enum {
+	MOVES_NONE,
 	MOVES_UP,
 	MOVES_DOWN,
 	MOVES_LEFT,
@@ -13,7 +14,6 @@ typedef enum {
 
 typedef enum {
 	ALIVE,
-	BLOCKED,
 	DEAD,
 	EATING
 } Status;
@@ -21,8 +21,8 @@ typedef enum {
 typedef struct {
 	Direction direction;
 	Position position;
+	Position lastPosition;
 	Status status;
-	unsigned char caloriesLeft;
 } Pacman;
 
 void PACMAN_move(Pacman *pacman);

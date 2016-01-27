@@ -23,13 +23,16 @@ void GMB_copyFromRomToCg(unsigned char positionInRom, unsigned char cgCode) {
  */
 void GMB_initialize() 
 {
-	GMB_copyFromRomToCg( 14, PACMAC_NO_MOVE);	
-	GMB_copyFromRomToCg( 15, PACMAC_GO_RIGHT);
-	GMB_copyFromRomToCg( 16, PACMAC_GO_UP);
-	GMB_copyFromRomToCg( 17, PACMAC_GO_LEFT);
-	GMB_copyFromRomToCg( 18, PACMAC_GO_DOWN);
+	GMB_copyFromRomToCg( 14, PACMAM_GO_RIGHT);	
+	GMB_copyFromRomToCg( 15, PACMAM_NO_MOVE);
+	GMB_copyFromRomToCg( 16, PACMAM_GO_UP);
+	GMB_copyFromRomToCg( 17, PACMAM_GO_LEFT);
+	GMB_copyFromRomToCg( 18, PACMAM_GO_DOWN);
+	GMB_copyFromRomToCg( 19, PACMAC_EAT);
+	GMB_copyFromRomToCg( 20, PACMAM_DEAD);
 
-	GMB_copyFromRomToCg( 19, COIN);
+	GMB_copyFromRomToCg( 30, GHOST);
+	GMB_copyFromRomToCg( 31, COIN);
 
 	GMB_copyFromRomToCg( 0, CORNER_TOP_LEFT);
 	GMB_copyFromRomToCg( 1, CORNER_BOTTOM_LEFT);
