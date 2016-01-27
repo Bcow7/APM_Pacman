@@ -82,8 +82,7 @@ void PACMAN_liveOrDie(Pacman *pacman) {
  * @param PACMAN La définition du pacman.
  */
 void PACMAN_show(Pacman *pacman) 
-{	
-  
+{	  
    T6963C_writeAt(pacman->lastPosition.x, pacman->lastPosition.y, EMPTY);
    T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_NO_MOVE);
 }
