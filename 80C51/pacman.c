@@ -5,26 +5,39 @@
 #include "gameboard.h"
 #include "pacman.h"
 
-#define FRUIT_CALORIES 3
-
 /**
  * Modifie les coordonnées du serpent selon sa direction.
  * @param PACMAN La description du serpent.
  */
 void PACMAN_move(Pacman *pacman) {
+   
+	unsigned char c;
+	Position newPosition = {pacman->position.x, pacman->position.y};
+   
+	pacman->lastPosition.x = pacman->position.x;
+	pacman->lastPosition.y = pacman->position.y;
+   
 	switch(pacman->direction) {
 		case MOVES_UP:
-			pacman->position.y--;
+			newPosition.y--;
 			break;
 		case MOVES_DOWN:
-			pacman->position.y++;
+			newPosition.y++;
 			break;
 		case MOVES_LEFT:
-			pacman->position.x--;
+			newPosition.x--;
 			break;
 		case MOVES_RIGHT:
-			pacman->position.x++;
+			newPosition.x++;
 			break;
+	}
+	// Lecture de la future position
+	c = T6963C_readFrom(newPosition.x, newPosition.y);
+	// Vérification que ce n'est pas un mur
+	if (c < CORNER_TOP_LEFT || c > LINE_RIGHT_VERTICAL) 
+	{
+	   pacman->position.x = newPosition.x;
+	   pacman->position.y = newPosition.y;
 	}
 }
 
@@ -35,17 +48,18 @@ void PACMAN_move(Pacman *pacman) {
  */
 void PACMAN_liveOrDie(Pacman *pacman) {
    
-	// A corriger
    unsigned char c;
    c = T6963C_readFrom(pacman->position.x, pacman->position.y);
    
    switch(c){
      case COIN:
 	 pacman->status = EATING;
-	 // On met à jour les calories
-	 pacman->caloriesLeft = FRUIT_CALORIES;
 	 break;
       case EMPTY:
+	 pacman->status = ALIVE;
+	 break;
+      case PACMAN_NO_MOVE:
+	 // La partie n'a pas commencé
 	 pacman->status = ALIVE;
 	 break;
       default:
@@ -69,7 +83,9 @@ void PACMAN_liveOrDie(Pacman *pacman) {
  */
 void PACMAN_show(Pacman *pacman) 
 {	
-   T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAC_NO_MOVE);
+  
+   T6963C_writeAt(pacman->lastPosition.x, pacman->lastPosition.y, EMPTY);
+   T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_NO_MOVE);
 }
 
 /**
@@ -80,19 +96,19 @@ void PACMAN_show(Pacman *pacman)
  */
 void PACMAN_turn(Pacman *pacman, Arrow arrow) 
 {   
-   if (arrow == ARROW_UP && pacman->direction != MOVES_DOWN)
+   if (arrow == ARROW_UP)
    {
        pacman->direction = MOVES_UP;
    } 
-   else if (arrow == ARROW_LEFT && pacman->direction != MOVES_RIGHT)
+   else if (arrow == ARROW_LEFT)
    {
        pacman->direction = MOVES_LEFT;
    } 
-   else if (arrow == ARROW_RIGHT && pacman->direction != MOVES_LEFT)
+   else if (arrow == ARROW_RIGHT)
    {
        pacman->direction = MOVES_RIGHT;
    } 
-   else if (arrow == ARROW_DOWN && pacman->direction != MOVES_UP)
+   else if (arrow == ARROW_DOWN)
    {
        pacman->direction = MOVES_DOWN;
    }
@@ -118,7 +134,7 @@ Status PACMAN_iterate(Pacman *pacman, Arrow arrow) {
 // Chaque test vérifie le comportement d'une fonctionnalité en établissant
 // un état initial et en vérifiant l'état final.
 int testPacmanTurnsTo(Direction currentDirection, Arrow turn, Direction expectedResult, char *testCode) {
-	Pacman pacman = {MOVES_RIGHT, {10, 10}, ALIVE, 0};
+	Pacman pacman = {MOVES_RIGHT, {10, 10},{10,10}, ALIVE};
 	pacman.direction = currentDirection;
 	PACMAN_turn(&pacman, turn);
 	return assertEquals(expectedResult, pacman.direction, testCode);	
