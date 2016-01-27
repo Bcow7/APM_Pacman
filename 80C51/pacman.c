@@ -69,7 +69,7 @@ void PACMAN_liveOrDie(Pacman *pacman) {
  */
 void PACMAN_show(Pacman *pacman) 
 {	
-   T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAC_NO_MOVE);
+   T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAM_NO_MOVE);
 }
 
 /**
