@@ -22,8 +22,7 @@ void initialize() {
 }
 
 void play() {
-	//Snake snake = {MOVES_RIGHT, {10, 10}, ALIVE, 5};
-	Pacman pacman = {MOVES_RIGHT, {10, 10}, ALIVE, 5};
+	Pacman pacman = {MOVES_NONE, {10, 10},{10,10}, ALIVE};
 	unsigned char *keyboard = (unsigned char __xdata *) 0x3000;
 	Arrow arrow;
 
@@ -33,11 +32,12 @@ void play() {
 	do {
 		arrow = KEYBOARD_readArrows(keyboard);
 		
+		PACMAN_iterate(&pacman, arrow);
 
 		pause(20000);
 	} while (pacman.status != DEAD);
 
-	GMB_display(3, 7, " Le serpent est mort ");
+	GMB_display(3, 7, " GAME OVER ");
 }
 
 void main(void) {

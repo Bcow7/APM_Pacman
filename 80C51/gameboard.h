@@ -11,13 +11,13 @@ int testGameboard();
 
 #define EMPTY 0x00
 
-#define PACMAM_GO_RIGHT			(0x10 + CHAR_BASE)
-#define PACMAM_NO_MOVE  		(0x11 + CHAR_BASE)
-#define PACMAM_GO_UP 			(0x12 + CHAR_BASE)
-#define PACMAM_GO_LEFT 			(0x13 + CHAR_BASE)
-#define PACMAM_GO_DOWN 			(0x14 + CHAR_BASE)
-#define PACMAC_EAT				(0x15 + CHAR_BASE)
-#define PACMAM_DEAD				(0x16 + CHAR_BASE)
+#define PACMAN_GO_RIGHT			(0x10 + CHAR_BASE)
+#define PACMAN_NO_MOVE  		(0x11 + CHAR_BASE)
+#define PACMAN_GO_UP 			(0x12 + CHAR_BASE)
+#define PACMAN_GO_LEFT 			(0x13 + CHAR_BASE)
+#define PACMAN_GO_DOWN 			(0x14 + CHAR_BASE)
+#define PACMAN_EAT				(0x15 + CHAR_BASE)
+#define PACMAN_DEAD				(0x16 + CHAR_BASE)
 
 #define GHOST 					(0x19 + CHAR_BASE)
 #define COIN 					(0x20 + CHAR_BASE)

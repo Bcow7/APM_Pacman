@@ -1,3 +1,5 @@
 80C51/Debug/
+80C51/Release/
+80C51/Test/
 *.pdsbak
 *.workspace
