@@ -59,9 +59,14 @@ void PACMAN_liveOrDie(Pacman *pacman) {
 	 pacman->status = ALIVE;
 	 break;
       case PACMAN_NO_MOVE:
-	 // La partie n'a pas commencé
-	 pacman->status = ALIVE;
-	 break;
+	 case PACMAN_EAT:
+	    case PACMAN_GO_LEFT:
+	       case PACMAN_GO_UP:
+		  case PACMAN_GO_RIGHT:
+		     case PACMAN_GO_DOWN:
+			// La partie n'a pas commencé
+			pacman->status = ALIVE;
+			break;
       default:
 	 pacman->status = DEAD;
 	 break;
@@ -82,9 +87,41 @@ void PACMAN_liveOrDie(Pacman *pacman) {
  * @param PACMAN La définition du pacman.
  */
 void PACMAN_show(Pacman *pacman) 
-{	  
-   T6963C_writeAt(pacman->lastPosition.x, pacman->lastPosition.y, EMPTY);
-   T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_NO_MOVE);
+{	
+   unsigned char c;
+   
+   if (pacman->direction == MOVES_NONE)
+   {
+      // Pas d'alternance d'image
+      T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_NO_MOVE);
+      
+   } else {
+      c = T6963C_readFrom(pacman->lastPosition.x, pacman->lastPosition.y);
+   
+      // On efface l'ancienne position
+      T6963C_writeAt(pacman->lastPosition.x, pacman->lastPosition.y, EMPTY);
+      
+      // Si le pacman est bloqué on alterne pas l'image
+      if (c == PACMAN_EAT || (pacman->position.x == pacman->lastPosition.x && pacman->position.y == pacman->lastPosition.y)) 
+      {
+	 switch(pacman->direction) {
+		   case MOVES_UP:
+			   T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_GO_UP);
+			   break;
+		   case MOVES_DOWN:
+			   T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_GO_DOWN);
+			   break;
+		   case MOVES_LEFT:
+			   T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_GO_LEFT);
+			   break;
+		   case MOVES_RIGHT:
+			   T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_GO_RIGHT);
+			   break;
+	   }
+      } else { 
+	 T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_EAT);
+      }
+   }
 }
 
 /**
