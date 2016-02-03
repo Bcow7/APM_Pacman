@@ -19,6 +19,22 @@ void GMB_copyFromRomToCg(unsigned char positionInRom, unsigned char cgCode) {
 }
 
 /**
+* Copie la définition du labyrinthe depuis la ROM vers la zone de définition
+* des caractères du T6963C.
+* @param positionInRom Position du labyrinthe dans la ROM.
+* @param cgCode Code du caractère dans le T6963C.
+*/
+
+void GMB_copyLabFromRomToCg(unsigned char start_rom, unsigned char x0, unsigned char y0)
+{
+   unsigned char x,y;
+   unsigned int address;
+   
+	 unsigned char *rom_cg_address = (unsigned char __xdata *) (ROM_CG_ADDRESS + (start_rom * 8));
+	 //address = T6963C_calculateAddress(x0,y0);
+	 T6963C_autoWrite(0x0,184,T6963C_COLONNES * 16);
+}
+/**
  * Initialise les caractères utilisés pendant le jeu.
  */
 void GMB_initialize() 
@@ -31,8 +47,8 @@ void GMB_initialize()
 	GMB_copyFromRomToCg( 19, PACMAN_EAT);
 	GMB_copyFromRomToCg( 20, PACMAN_DEAD);
 
-	GMB_copyFromRomToCg( 30, GHOST);
-	GMB_copyFromRomToCg( 31, COIN);
+	GMB_copyFromRomToCg( 21, GHOST);
+	GMB_copyFromRomToCg( 22, COIN);
 
 	GMB_copyFromRomToCg( 0, CORNER_TOP_LEFT);
 	GMB_copyFromRomToCg( 1, CORNER_BOTTOM_LEFT);
@@ -51,6 +67,8 @@ void GMB_initialize()
 	GMB_copyFromRomToCg( 11, LINE_LEFT_VERTICAL);
 	GMB_copyFromRomToCg( 12, LINE_CENTER_VERTICAL);
 	GMB_copyFromRomToCg( 13, LINE_RIGHT_VERTICAL);
+	
+	
 }
 
 /**
@@ -62,9 +80,11 @@ void GMB_initialize()
  */
 void GMB_draw(unsigned char x0, unsigned char y0, unsigned char x1, unsigned char y1) {
 
-   unsigned char i;
    
+   unsigned char i;
+   /*
    T6963C_writeAt(x0, y0, CORNER_TOP_LEFT);
+   
    T6963C_writeAt(x1, y0, CORNER_TOP_RIGHT);
    T6963C_writeAt(x0, y1, CORNER_BOTTOM_LEFT);
    T6963C_writeAt(x1, y1, CORNER_BOTTOM_RIGHT);
@@ -77,6 +97,8 @@ void GMB_draw(unsigned char x0, unsigned char y0, unsigned char x1, unsigned cha
       T6963C_writeAt(x0, i, LINE_LEFT_VERTICAL);
       T6963C_writeAt(x1, i, LINE_RIGHT_VERTICAL);
    }
+   */
+   GMB_copyLabFromRomToCg(23,x0, y0);
 }
 
 /**
