@@ -5,13 +5,30 @@
 #include "gameboard.h"
 #include "pacman.h"
 
+
+/**
+ * Modifie les coordonnées du serpent selon sa direction.
+ * @param PACMAN La description du serpent.
+ */
+ bool PACMAN_isFreeSpace(unsigned char x, unsigned char y)
+ {
+	unsigned char c;
+	c = T6963C_readFrom(x, y);
+	// Vérification que ce n'est pas un mur
+	if (c >= CORNER_TOP_LEFT && c <= CORNER_BOTTOM_RIGHT_RIGHT) 
+	{
+	   return false;
+	}
+	
+	return true;
+}	
+
 /**
  * Modifie les coordonnées du serpent selon sa direction.
  * @param PACMAN La description du serpent.
  */
 void PACMAN_move(Pacman *pacman) {
    
-	unsigned char c;
 	Position newPosition = {pacman->position.x, pacman->position.y};
    
 	pacman->lastPosition.x = pacman->position.x;
@@ -31,10 +48,10 @@ void PACMAN_move(Pacman *pacman) {
 			newPosition.x++;
 			break;
 	}
-	// Lecture de la future position
-	c = T6963C_readFrom(newPosition.x, newPosition.y);
+
+	
 	// Vérification que ce n'est pas un mur
-	if (c < CORNER_TOP_LEFT || c > LINE_RIGHT_VERTICAL) 
+	if (PACMAN_isFreeSpace(newPosition.x, newPosition.y)) 
 	{
 	   pacman->position.x = newPosition.x;
 	   pacman->position.y = newPosition.y;
@@ -58,17 +75,11 @@ void PACMAN_liveOrDie(Pacman *pacman) {
       case EMPTY:
 	 pacman->status = ALIVE;
 	 break;
-      case PACMAN_NO_MOVE:
-	 case PACMAN_EAT:
-	    case PACMAN_GO_LEFT:
-	       case PACMAN_GO_UP:
-		  case PACMAN_GO_RIGHT:
-		     case PACMAN_GO_DOWN:
-			// La partie n'a pas commencé
-			pacman->status = ALIVE;
-			break;
-      default:
+      case GHOST:
 	 pacman->status = DEAD;
+	 break;
+      default:
+	 pacman->status = ALIVE;
 	 break;
    }
    
@@ -132,19 +143,19 @@ void PACMAN_show(Pacman *pacman)
  */
 void PACMAN_turn(Pacman *pacman, Arrow arrow) 
 {   
-   if (arrow == ARROW_UP)
+   if (arrow == ARROW_UP && PACMAN_isFreeSpace(pacman->position.x, pacman->position.y-1))
    {
        pacman->direction = MOVES_UP;
    } 
-   else if (arrow == ARROW_LEFT)
+   else if (arrow == ARROW_LEFT && PACMAN_isFreeSpace(pacman->position.x-1, pacman->position.y))
    {
        pacman->direction = MOVES_LEFT;
    } 
-   else if (arrow == ARROW_RIGHT)
+   else if (arrow == ARROW_RIGHT && PACMAN_isFreeSpace(pacman->position.x+1, pacman->position.y))
    {
        pacman->direction = MOVES_RIGHT;
    } 
-   else if (arrow == ARROW_DOWN)
+   else if (arrow == ARROW_DOWN && PACMAN_isFreeSpace(pacman->position.x, pacman->position.y+1))
    {
        pacman->direction = MOVES_DOWN;
    }
