@@ -3,6 +3,7 @@
 
 #include "keyboard.h"
 #include "main.h"
+#include "stdbool.h"
 
 typedef enum {
 	MOVES_NONE,
@@ -25,6 +26,7 @@ typedef struct {
 	Status status;
 } Pacman;
 
+bool PACMAN_isFreeSpace(unsigned char x, unsigned char y);
 void PACMAN_move(Pacman *pacman);
 void PACMAN_liveOrDie(Pacman *pacman);
 void PACMAN_show(Pacman *pacman);

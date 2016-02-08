@@ -5,13 +5,30 @@
 #include "gameboard.h"
 #include "pacman.h"
 
+
 /**
- * Modifie les coordonnées du serpent selon sa direction.
+ * Modifie les coordonnées du PACMAN selon sa direction.
+ * @param PACMAN La description du serpent.
+ */
+ bool PACMAN_isFreeSpace(unsigned char x, unsigned char y)
+ {
+	unsigned char c;
+	c = T6963C_readFrom(x, y);
+	// Vérification que ce n'est pas un mur
+	if (c >= CORNER_TOP_LEFT && c <= CORNER_BOTTOM_RIGHT_RIGHT) 
+	{
+	   return false;
+	}
+	
+	return true;
+}	
+
+/**
+ * Modifie les coordonnées du PACMAN selon sa direction.
  * @param PACMAN La description du serpent.
  */
 void PACMAN_move(Pacman *pacman) {
    
-	unsigned char c;
 	Position newPosition = {pacman->position.x, pacman->position.y};
    
 	pacman->lastPosition.x = pacman->position.x;
@@ -31,10 +48,10 @@ void PACMAN_move(Pacman *pacman) {
 			newPosition.x++;
 			break;
 	}
-	// Lecture de la future position
-	c = T6963C_readFrom(newPosition.x, newPosition.y);
+
+	
 	// Vérification que ce n'est pas un mur
-	if (c < CORNER_TOP_LEFT || c > LINE_RIGHT_VERTICAL) 
+	if (PACMAN_isFreeSpace(newPosition.x, newPosition.y)) 
 	{
 	   pacman->position.x = newPosition.x;
 	   pacman->position.y = newPosition.y;
@@ -42,13 +59,18 @@ void PACMAN_move(Pacman *pacman) {
 }
 
 /**
- * Décide si le serpent vit ou meurt, ou mange un fruit, selon
+ * Décide si le PACMAN vit ou meurt, ou mange un coin, selon
  * sa position et ce qui se trouve à cet endroit.
- * @param PACMAN La description du serpent.
+ * @param PACMAN La description du PACMAN.
  */
 void PACMAN_liveOrDie(Pacman *pacman) {
    
    unsigned char c;
+   
+   // Si le status est déjà DEAD, on ne change pas!
+   if(pacman->status == DEAD)
+      return;
+   
    c = T6963C_readFrom(pacman->position.x, pacman->position.y);
    
    switch(c){
@@ -58,17 +80,11 @@ void PACMAN_liveOrDie(Pacman *pacman) {
       case EMPTY:
 	 pacman->status = ALIVE;
 	 break;
-      case PACMAN_NO_MOVE:
-	 case PACMAN_EAT:
-	    case PACMAN_GO_LEFT:
-	       case PACMAN_GO_UP:
-		  case PACMAN_GO_RIGHT:
-		     case PACMAN_GO_DOWN:
-			// La partie n'a pas commencé
-			pacman->status = ALIVE;
-			break;
-      default:
+      case GHOST:
 	 pacman->status = DEAD;
+	 break;
+      default:
+	 pacman->status = ALIVE;
 	 break;
    }
    
@@ -95,7 +111,9 @@ void PACMAN_show(Pacman *pacman)
       // Pas d'alternance d'image
       T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_NO_MOVE);
       
-   } else {
+   } 
+   else 
+   {
       c = T6963C_readFrom(pacman->lastPosition.x, pacman->lastPosition.y);
    
       // On efface l'ancienne position
@@ -104,7 +122,7 @@ void PACMAN_show(Pacman *pacman)
       // Si le pacman est bloqué on alterne pas l'image
       if (c == PACMAN_EAT || (pacman->position.x == pacman->lastPosition.x && pacman->position.y == pacman->lastPosition.y)) 
       {
-	 switch(pacman->direction) {
+	     switch(pacman->direction) {
 		   case MOVES_UP:
 			   T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_GO_UP);
 			   break;
@@ -118,33 +136,34 @@ void PACMAN_show(Pacman *pacman)
 			   T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_GO_RIGHT);
 			   break;
 	   }
-      } else { 
-	 T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_EAT);
-      }
+       } 
+	   else 
+	   { 
+		   T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_EAT);
+       }
    }
 }
 
 /**
  * Décide de varier la direction du serpent selon la direction indiquée.
- * Le serpent ne peut jamais tourner de 180º en un mouvement.
- * @param PACMAN La description du serpent.
+ * @param PACMAN La description du PACMAN.
  * @param arrow La direction désirée.
  */
 void PACMAN_turn(Pacman *pacman, Arrow arrow) 
 {   
-   if (arrow == ARROW_UP)
+   if (arrow == ARROW_UP && PACMAN_isFreeSpace(pacman->position.x, pacman->position.y-1))
    {
        pacman->direction = MOVES_UP;
    } 
-   else if (arrow == ARROW_LEFT)
+   else if (arrow == ARROW_LEFT && PACMAN_isFreeSpace(pacman->position.x-1, pacman->position.y))
    {
        pacman->direction = MOVES_LEFT;
    } 
-   else if (arrow == ARROW_RIGHT)
+   else if (arrow == ARROW_RIGHT && PACMAN_isFreeSpace(pacman->position.x+1, pacman->position.y))
    {
        pacman->direction = MOVES_RIGHT;
    } 
-   else if (arrow == ARROW_DOWN)
+   else if (arrow == ARROW_DOWN && PACMAN_isFreeSpace(pacman->position.x, pacman->position.y+1))
    {
        pacman->direction = MOVES_DOWN;
    }
@@ -156,6 +175,7 @@ void PACMAN_turn(Pacman *pacman, Arrow arrow)
  * @return L'état du pacman après l'itération.
  */
 Status PACMAN_iterate(Pacman *pacman, Arrow arrow) {
+	PACMAN_liveOrDie(pacman);
 	PACMAN_show(pacman);
 	PACMAN_turn(pacman, arrow);
 	PACMAN_move(pacman);
