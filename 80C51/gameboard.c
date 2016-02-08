@@ -32,7 +32,7 @@ void GMB_copyLabFromRomToCg(unsigned char start_rom, unsigned char x0, unsigned 
    
 	 unsigned char *rom_cg_address = (unsigned char __xdata *) (ROM_CG_ADDRESS + (start_rom * 8));
 	 //address = T6963C_calculateAddress(x0,y0);
-	 T6963C_autoWrite(0x0,184,T6963C_COLONNES * 16);
+	 T6963C_autoWrite(0x0,208,T6963C_COLONNES * 16);
 }
 /**
  * Initialise les caractères utilisés pendant le jeu.
@@ -59,6 +59,9 @@ void GMB_initialize()
 	GMB_copyFromRomToCg( 5, T_BOTTOM_HORIZONTAL);
 	GMB_copyFromRomToCg( 6, T_LEFT_VERTICAL);
 	GMB_copyFromRomToCg( 7, T_RIGHT_VERTICAL);
+	GMB_copyFromRomToCg(23,CORNER_BOTTOM_LEFT_LEFT);
+	GMB_copyFromRomToCg(24,CORNER_BOTTOM_RIGHT_RIGHT);
+	GMB_copyFromRomToCg(25,SPECIAL_P);
 
 	GMB_copyFromRomToCg( 8, LINE_TOP_HORIZONTAL);
 	GMB_copyFromRomToCg( 9, LINE_CENTER_HORIZONTAL);
