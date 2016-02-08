@@ -48,7 +48,17 @@ void PACMAN_move(Pacman *pacman) {
 			newPosition.x++;
 			break;
 	}
-
+	
+	// PACMAN prend un tunnel
+	if(newPosition.x <= PACMAN_LIMIT_X0) {
+	    newPosition.x = PACMAN_LIMIT_X1;
+	} else if (newPosition.x >= PACMAN_LIMIT_X1) {
+	    newPosition.x = PACMAN_LIMIT_X0;
+	} else if (newPosition.y <= PACMAN_LIMIT_Y0) {
+	    newPosition.y = PACMAN_LIMIT_Y1;
+	} else if (newPosition.y >= PACMAN_LIMIT_Y1) {
+	    newPosition.y = PACMAN_LIMIT_Y0;
+	}
 	
 	// Vérification que ce n'est pas un mur
 	if (PACMAN_isFreeSpace(newPosition.x, newPosition.y)) 
@@ -86,15 +96,6 @@ void PACMAN_liveOrDie(Pacman *pacman) {
       default:
 	 pacman->status = ALIVE;
 	 break;
-   }
-   
-   // On vérifie  que le Pacman est dans l'espace de jeu
-   if(pacman->position.x <= PACMAN_LIMIT_X0 ||
-      pacman->position.x >= PACMAN_LIMIT_X1 ||
-      pacman->position.y <= PACMAN_LIMIT_Y0 ||
-      pacman->position.y >= PACMAN_LIMIT_Y1)
-   {
-      pacman->status = DEAD;
    }
 }
 
