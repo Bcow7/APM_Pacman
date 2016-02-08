@@ -7,7 +7,7 @@
 
 
 /**
- * Modifie les coordonnées du serpent selon sa direction.
+ * Modifie les coordonnées du PACMAN selon sa direction.
  * @param PACMAN La description du serpent.
  */
  bool PACMAN_isFreeSpace(unsigned char x, unsigned char y)
@@ -24,7 +24,7 @@
 }	
 
 /**
- * Modifie les coordonnées du serpent selon sa direction.
+ * Modifie les coordonnées du PACMAN selon sa direction.
  * @param PACMAN La description du serpent.
  */
 void PACMAN_move(Pacman *pacman) {
@@ -59,9 +59,9 @@ void PACMAN_move(Pacman *pacman) {
 }
 
 /**
- * Décide si le serpent vit ou meurt, ou mange un fruit, selon
+ * Décide si le PACMAN vit ou meurt, ou mange un coin, selon
  * sa position et ce qui se trouve à cet endroit.
- * @param PACMAN La description du serpent.
+ * @param PACMAN La description du PACMAN.
  */
 void PACMAN_liveOrDie(Pacman *pacman) {
    
@@ -111,7 +111,9 @@ void PACMAN_show(Pacman *pacman)
       // Pas d'alternance d'image
       T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_NO_MOVE);
       
-   } else {
+   } 
+   else 
+   {
       c = T6963C_readFrom(pacman->lastPosition.x, pacman->lastPosition.y);
    
       // On efface l'ancienne position
@@ -120,7 +122,7 @@ void PACMAN_show(Pacman *pacman)
       // Si le pacman est bloqué on alterne pas l'image
       if (c == PACMAN_EAT || (pacman->position.x == pacman->lastPosition.x && pacman->position.y == pacman->lastPosition.y)) 
       {
-	 switch(pacman->direction) {
+	     switch(pacman->direction) {
 		   case MOVES_UP:
 			   T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_GO_UP);
 			   break;
@@ -134,16 +136,17 @@ void PACMAN_show(Pacman *pacman)
 			   T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_GO_RIGHT);
 			   break;
 	   }
-      } else { 
-	 T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_EAT);
-      }
+       } 
+	   else 
+	   { 
+		   T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_EAT);
+       }
    }
 }
 
 /**
  * Décide de varier la direction du serpent selon la direction indiquée.
- * Le serpent ne peut jamais tourner de 180º en un mouvement.
- * @param PACMAN La description du serpent.
+ * @param PACMAN La description du PACMAN.
  * @param arrow La direction désirée.
  */
 void PACMAN_turn(Pacman *pacman, Arrow arrow) 
