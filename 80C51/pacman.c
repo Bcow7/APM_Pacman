@@ -66,6 +66,11 @@ void PACMAN_move(Pacman *pacman) {
 void PACMAN_liveOrDie(Pacman *pacman) {
    
    unsigned char c;
+   
+   // Si le status est déjà DEAD, on ne change pas!
+   if(pacman->status == DEAD)
+      return;
+   
    c = T6963C_readFrom(pacman->position.x, pacman->position.y);
    
    switch(c){
@@ -167,6 +172,7 @@ void PACMAN_turn(Pacman *pacman, Arrow arrow)
  * @return L'état du pacman après l'itération.
  */
 Status PACMAN_iterate(Pacman *pacman, Arrow arrow) {
+	PACMAN_liveOrDie(pacman);
 	PACMAN_show(pacman);
 	PACMAN_turn(pacman, arrow);
 	PACMAN_move(pacman);

@@ -15,11 +15,16 @@
  {
 	unsigned char c;
 	c = T6963C_readFrom(x, y);
-	// Vérification que ce n'est pas un mur
+	
 	if (c >= CORNER_TOP_LEFT && c <= CORNER_BOTTOM_RIGHT_RIGHT) 
 	{
+	   // Vérification que ce n'est pas un mur
 	   return false;
-	}
+	   
+	}/* else if (c == GHOST) {
+	   // Il y a déjà un fantome sur cette case
+	   return false;
+	}*/
 	
 	return true;
 }	
@@ -74,15 +79,28 @@ void GHOST_move(Ghost *ghost) {
  */
 void GHOST_show(Ghost *ghost) 
 {	   
+   unsigned char c;
+   
    if (ghost->direction == MOVES_NONE)
    {
-      // Pas d'alternance d'image
       T6963C_writeAt(ghost->position.x, ghost->position.y, GHOST);
       
    } else {
 
-      // On efface l'ancienne position
-      T6963C_writeAt(ghost->lastPosition.x, ghost->lastPosition.y, EMPTY);
+      // On vérifie s'il faut remettre un coin ou laisser vide l'ancien emplacement
+      if (ghost->lastPositionWasACoin){
+	 T6963C_writeAt(ghost->lastPosition.x, ghost->lastPosition.y, COIN);
+      } else {
+	 T6963C_writeAt(ghost->lastPosition.x, ghost->lastPosition.y, EMPTY);
+      }
+      
+      // On regarde s'il y a un COIN au nouvel emplacement, et on dessine le GHOST
+      c = T6963C_readFrom(ghost->position.x, ghost->position.y);
+      if (c == COIN) {
+	 ghost->lastPositionWasACoin = true;
+      } else {
+	 ghost->lastPositionWasACoin = false;
+      }
       T6963C_writeAt(ghost->position.x, ghost->position.y, GHOST);
    }
 }
