@@ -129,7 +129,7 @@ void GMB_display(unsigned char x0, unsigned char y0, char *text) {
    unsigned int address;
    unsigned char i;
    
-   GMB_draw(x0, y0, x0 + strlen(text) + 1, y0 + 2);
+   //GMB_draw(x0, y0, x0 + strlen(text) + 1, y0 + 2);
 
    for(i = 0; i<strlen(text); i++)
    {
