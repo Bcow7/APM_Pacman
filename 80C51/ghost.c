@@ -70,6 +70,17 @@ void GHOST_move(Ghost *ghost) {
 	      GHOST_turnRandomDirection(ghost);
 	   }
 	}
+	
+	// Vérification du compte à rebours
+	if (ghost->countdown == 0) {
+	   ghost->countdown = -1;
+	   while (currentDirection == ghost->direction)
+	   {
+	      GHOST_turnRandomDirection(ghost);
+	   }
+	} else if (ghost->countdown > 0) {
+	   ghost->countdown--;
+	}
 }
 
 

@@ -23,7 +23,7 @@ void initialize() {
 
 void play() {
 	Pacman pacman = {MOVES_NONE, {10, 10},{10,10}, ALIVE};
-	Ghost ghost1 = {MOVES_DOWN, {17, 7},{17,7}, HUNTER};
+	Ghost ghost1 = {MOVES_NONE, {17, 7},{17,7}, HUNTER, 10};
 	unsigned char *keyboard = (unsigned char __xdata *) 0x3000;
 	Arrow arrow;
 

@@ -15,8 +15,9 @@ typedef struct {
 	Direction direction;
 	Position position;
 	Position lastPosition;
-	unsigned char lastPositionWasACoin;
 	GhostStatus status;
+	int countdown; // Temps d'attente avant qu'il commence à chasser
+	unsigned char lastPositionWasACoin;
 } Ghost;
 
 bool GHOST_isFreeSpace(unsigned char x, unsigned char y);
