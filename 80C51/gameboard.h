@@ -41,6 +41,7 @@ int testGameboard();
 #define LINE_RIGHT_VERTICAL		(0x34 + CHAR_BASE)
 #define CORNER_BOTTOM_LEFT_LEFT		(0x35 + CHAR_BASE)
 #define CORNER_BOTTOM_RIGHT_RIGHT	(0x36 + CHAR_BASE)
+#define SPECIAL_P			(0x37 + CHAR_BASE)
 
 
 void GMB_initialize();

@@ -3,8 +3,8 @@
 #include "test.h"
 #include "buffer.h"
 #include "pacman.h"
+#include "ghost.h"
 #include "keyboard.h"
-#include "coin.h"
 #include "gameboard.h"
 
 // PacMan
@@ -23,21 +23,24 @@ void initialize() {
 
 void play() {
 	Pacman pacman = {MOVES_NONE, {10, 10},{10,10}, ALIVE};
+	Ghost ghost1 = {MOVES_NONE, {17, 7},{17,7}, HUNTER, 10};
+	Ghost ghost2 = {MOVES_NONE, {17, 8},{17,8}, HUNTER, 25};
 	unsigned char *keyboard = (unsigned char __xdata *) 0x3000;
 	Arrow arrow;
 
 	GMB_draw(PACMAN_LIMIT_X0, PACMAN_LIMIT_Y0, PACMAN_LIMIT_X1, PACMAN_LIMIT_Y1);
-	//COIN_place();
 	
 	do {
 		arrow = KEYBOARD_readArrows(keyboard);
-		
+	
 		PACMAN_iterate(&pacman, arrow);
+		GHOST_iterate(&ghost1);
+	        GHOST_iterate(&ghost2);
 
 		pause(20000);
 	} while (pacman.status != DEAD);
 
-	GMB_display(3, 7, " GAME OVER ");
+	GMB_display(8, 7, " GAME OVER ");
 }
 
 void main(void) {
