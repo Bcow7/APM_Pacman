@@ -60,6 +60,7 @@ void PACMAN_move(Pacman *pacman) {
 	    newPosition.y = PACMAN_LIMIT_Y0;
 	}
 
+
 	// Vérification que ce n'est pas un mur
 	if (PACMAN_isFreeSpace(newPosition.x, newPosition.y))
 	{
@@ -77,9 +78,11 @@ void PACMAN_liveOrDie(Pacman *pacman) {
 
    unsigned char c;
 
+   
    // Si le status est déjà DEAD, on ne change pas!
    if(pacman->status == DEAD)
       return;
+   
 
    c = T6963C_readFrom(pacman->position.x, pacman->position.y);
 
@@ -112,8 +115,10 @@ void PACMAN_show(Pacman *pacman)
       // Pas d'alternance d'image
       T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_NO_MOVE);
 
-   }
-   else
+      
+   } 
+   else 
+
    {
       c = T6963C_readFrom(pacman->lastPosition.x, pacman->lastPosition.y);
 
@@ -136,17 +141,23 @@ void PACMAN_show(Pacman *pacman)
 		   case MOVES_RIGHT:
 			   T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_GO_RIGHT);
 			   break;
-	   }
-       }
-	   else
-	   {
+	  	 }
+
+       } 
+	   else 
+	   { 
+
 		   T6963C_writeAt(pacman->position.x, pacman->position.y, PACMAN_EAT);
        }
    }
 }
 
 /**
+<<<<<<< HEAD
  * Décide de varier la direction du PACMAN selon la direction indiquée.
+=======
+ * Décide de varier la direction du serpent selon la direction indiquée.
+>>>>>>> origin/master
  * @param PACMAN La description du PACMAN.
  * @param arrow La direction désirée.
  */
