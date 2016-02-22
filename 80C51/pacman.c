@@ -153,11 +153,7 @@ void PACMAN_show(Pacman *pacman)
 }
 
 /**
-<<<<<<< HEAD
  * Décide de varier la direction du PACMAN selon la direction indiquée.
-=======
- * Décide de varier la direction du serpent selon la direction indiquée.
->>>>>>> origin/master
  * @param PACMAN La description du PACMAN.
  * @param arrow La direction désirée.
  */
@@ -271,13 +267,15 @@ int testPacmanHitsABorder() {
 
 
 	Pacman pacman;
-   // Test Si il est dans le jeux
+    
+	// Test Si il est dans le jeux
 	pacman.status = ALIVE;
 	pacman.position.x = PACMAN_LIMIT_X0 + 1;
 	pacman.position.y = PACMAN_LIMIT_Y0 + 1;
 	PACMAN_liveOrDie(&pacman);
 	testsInError += assertEquals(pacman.status, ALIVE, "SO01");
 
+	// Test Si il touche un mur
     pacman.position.x = 10;
 	pacman.position.y = 10;
 	pacman.status = ALIVE;
@@ -315,7 +313,7 @@ int testPacmanHitsABorder() {
 	return testsInError;
 }
 
-// Véifie que le Pacman lorsque qu'il touche un Ghost meure 
+// Véifie que le Pacman meure lorsque qu'il touche un Ghost  
 int testPacmanHitsAGhost(){
 
 	int testsInError = 0;
