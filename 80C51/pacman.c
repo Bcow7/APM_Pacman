@@ -235,7 +235,8 @@ int testPacmanTurns() {
 
 	return testsInError;
 }
-	// Vérifie que le pacamn ce déplace bien dans les 4 direction
+
+// Vérifie que le pacamn ce déplace bien dans les 4 direction
 
 int testPacmanMoves() {
 	int testsInError = 0;
@@ -263,8 +264,8 @@ int testPacmanMoves() {
 
 	return testsInError;
 }
-// Véifie que le Pacman lorsque qu'il touche un mur ne meure pas et s'arrete
 
+// Véifie que le Pacman lorsque qu'il touche un mur ne meure pas et s'arrete
 int testPacmanHitsABorder() {
 	int testsInError = 0;
 
@@ -277,27 +278,16 @@ int testPacmanHitsABorder() {
 	PACMAN_liveOrDie(&pacman);
 	testsInError += assertEquals(pacman.status, ALIVE, "SO01");
 
-     	pacman.position.x = 10;
+    pacman.position.x = 10;
 	pacman.position.y = 10;
 	pacman.status = ALIVE;
-        T6963C_writeAt(pacman.position.x+1, pacman.position.y, T_TOP_HORIZONTAL);
+    T6963C_writeAt(pacman.position.x+1, pacman.position.y, T_TOP_HORIZONTAL);
    	pacman.direction = MOVES_RIGHT;
 	PACMAN_move(&pacman);
 	testsInError += assertEquals(1, 10, "SO11");
 	testsInError += assertEquals(pacman.status, ALIVE, "SO02");
 
-
-      	pacman.position.x = 10;
-	pacman.position.y = 10;
-	pacman.status = ALIVE;
-        T6963C_writeAt(pacman.position.x+1, pacman.position.y, GHOST);
-   	pacman.direction = MOVES_RIGHT;
-	PACMAN_move(&pacman);
-	testsInError += assertEquals(10, 10, "SO12");
-	testsInError += assertEquals(pacman.status, DEAD, "SO03");
-
-
-/*
+	/*
 	pacman.status = ALIVE;
 	pacman.position.x = PACMAN_LIMIT_X0;
 	pacman.position.y = PACMAN_LIMIT_Y0 + 1;
@@ -321,7 +311,26 @@ int testPacmanHitsABorder() {
 	pacman.position.y = PACMAN_LIMIT_Y1;
 	PACMAN_liveOrDie(&pacman);
 	testsInError += assertEquals(pacman.status, BLOCKED, "SO05");
-*/
+	*/
+	return testsInError;
+}
+
+// Véifie que le Pacman lorsque qu'il touche un Ghost meure 
+int testPacmanHitsAGhost(){
+
+	int testsInError = 0;
+
+	Pacman pacman;
+
+	pacman.position.x = 10;
+	pacman.position.y = 10;
+	pacman.status = ALIVE;
+    T6963C_writeAt(pacman.position.x+1, pacman.position.y, GHOST);
+   	pacman.direction = MOVES_RIGHT;
+	PACMAN_move(&pacman);
+	testsInError += assertEquals(10, 10, "SO12");
+	testsInError += assertEquals(pacman.status, ALIVE, "SO03");
+
 	return testsInError;
 }
 /*
@@ -381,14 +390,6 @@ int bddPacmanHitsAnObstacle()
 	return testsInError;
 }
 /*
-int bddPacmanHitsAGhost()
-{
-	int testsInError = 0;
-
-	//A créer
-
-	return testsInError;
-}
 
 int testPacmanEatsACoin() {
 	int testsInError = 0;
@@ -431,13 +432,15 @@ int bddPacmanMovesTurnsAndCatchesACoin() {
  * @return Le nombre de tests échoués.
  */
 int testPacman() {
+
 	int testsInError = 0;
 
 	// Tests unitaires:
 	testsInError += testPacmanTurns();
 	testsInError += testPacmanMoves();
 	testsInError += testPacmanHitsABorder();
-	 T6963C_writeAt(15, 15, GHOST);
+	T6963C_writeAt(15, 15, GHOST);
+	testsInError += testPacmanHitsAGhost();
 	// Tests de comportement:
 	//testsInError += bddPacmanHitsAnObstacle();
 	//testsInError += bddPacmanHitsAGhost();
