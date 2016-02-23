@@ -4,6 +4,7 @@
 #include "buffer.h"
 #include "gameboard.h"
 #include "pacman.h"
+#include "ghost.h"
 
 
 /**
@@ -206,6 +207,36 @@ int testPacmanTurnsTo(Direction currentDirection, Arrow turn, Direction expected
 
 // Test que le pacman peut ce diriger dans tout les direction quelque soit sont sens de déplacment
 
+int testPacmanLiveOrDive() {
+	int testsInError = 0;
+
+	Pacman pacman;
+
+	pacman.position.x = 10;
+	pacman.position.y = 10;
+	pacman.status = ALIVE;
+
+	// Test Si il est sur un COIN
+    T6963C_writeAt(pacman.position.x, pacman.position.y, COIN);
+	PACMAN_liveOrDie(&pacman);
+	testsInError += assertEquals(pacman.status, EATING, "PLOD01");
+	testsInError += assertEqualsStatusString(pacman.status, EATING, "PLOD01");
+	
+	// Test Si il est sur un EMPTY
+    T6963C_writeAt(pacman.position.x, pacman.position.y, EMPTY);
+	PACMAN_liveOrDie(&pacman);
+	testsInError += assertEquals(pacman.status, ALIVE, "PLOD02");
+	testsInError += assertEqualsStatusString(pacman.status, ALIVE, "PLOD02");
+
+	// Test Si il est sur un GHOST
+    T6963C_writeAt(pacman.position.x, pacman.position.y, GHOST);
+	PACMAN_liveOrDie(&pacman);
+	testsInError += assertEquals(pacman.status, DEAD, "PLOD03");
+	testsInError += assertEqualsStatusString(pacman.status, DEAD, "PLOD03");
+
+
+	return testsInError;
+}
 int testPacmanTurns() {
 	int testsInError = 0;
 
@@ -244,19 +275,19 @@ int testPacmanMoves() {
 
 	pacman.direction = MOVES_UP;
 	PACMAN_move(&pacman);
-	testsInError += assertEquals(9, pacman.position.y, "SM001");
+	testsInError += assertEquals(9, pacman.position.y, "PM001");
 
 	pacman.direction = MOVES_DOWN;
 	PACMAN_move(&pacman);
-	testsInError += assertEquals(10, pacman.position.y, "SM002");
+	testsInError += assertEquals(10, pacman.position.y, "PM002");
 
 	pacman.direction = MOVES_LEFT;
 	PACMAN_move(&pacman);
-	testsInError += assertEquals( 9, pacman.position.x, "SM003");
+	testsInError += assertEquals( 9, pacman.position.x, "PM003");
 
 	pacman.direction = MOVES_RIGHT;
 	PACMAN_move(&pacman);
-	testsInError += assertEquals(10, pacman.position.x, "SM004");
+	testsInError += assertEquals(10, pacman.position.x, "PM004");
 
 	return testsInError;
 }
@@ -273,7 +304,9 @@ int testPacmanHitsABorder() {
 	pacman.position.x = PACMAN_LIMIT_X0 + 1;
 	pacman.position.y = PACMAN_LIMIT_Y0 + 1;
 	PACMAN_liveOrDie(&pacman);
-	testsInError += assertEquals(pacman.status, ALIVE, "SO01");
+	testsInError += assertEquals(pacman.status, ALIVE, "PHAB01");
+	testsInError += assertEqualsStatusString(pacman.status, ALIVE, "PHAB01");
+
 
 	// Test Si il touche un mur
     pacman.position.x = 10;
@@ -282,8 +315,8 @@ int testPacmanHitsABorder() {
     T6963C_writeAt(pacman.position.x+1, pacman.position.y, T_TOP_HORIZONTAL);
    	pacman.direction = MOVES_RIGHT;
 	PACMAN_move(&pacman);
-	testsInError += assertEquals(1, 10, "SO11");
-	testsInError += assertEquals(pacman.status, ALIVE, "SO02");
+	//testsInError += assertEquals(1, 10, "SO11");
+	testsInError += assertEquals(pacman.status, ALIVE, "PHAB02");
 
 	/*
 	pacman.status = ALIVE;
@@ -319,15 +352,19 @@ int testPacmanHitsAGhost(){
 	int testsInError = 0;
 
 	Pacman pacman;
+	Ghost ghost;
 
 	pacman.position.x = 10;
 	pacman.position.y = 10;
 	pacman.status = ALIVE;
+
     T6963C_writeAt(pacman.position.x+1, pacman.position.y, GHOST);
    	pacman.direction = MOVES_RIGHT;
 	PACMAN_move(&pacman);
-	testsInError += assertEquals(10, 10, "SO12");
-	testsInError += assertEquals(pacman.status, ALIVE, "SO03");
+	PACMAN_liveOrDie(&pacman);
+
+	testsInError += assertEquals(pacman.status, DEAD, "PHAG03");
+	testsInError += assertEqualsStatusString(pacman.status, DEAD, "PHAG03");
 
 	return testsInError;
 }
@@ -339,7 +376,7 @@ int testPacmanHitsAGhost(){
 // 3- Vérifie, en contrôlant le contenu de l'écran, que ce
 //    que percevrait l'utilisateur est juste
 
-/*
+
 int bddPacmanHitsThisObstacle(char obstacle, char *testId) {
 	BddExpectedContent c = {
 		"  1114....",
@@ -387,7 +424,7 @@ int bddPacmanHitsAnObstacle()
 
 	return testsInError;
 }
-/*
+
 
 int testPacmanEatsACoin() {
 	int testsInError = 0;
@@ -423,12 +460,13 @@ int bddPacmanMovesTurnsAndCatchesACoin() {
 
 	return BDD_assert(c, "SNTF");
 }
+*/
 
-/**
+/*
  * Collection de tests.
  * Les tests en erreur sont affichés à l'écran.
  * @return Le nombre de tests échoués.
- */
+*/
 int testPacman() {
 
 	int testsInError = 0;
@@ -436,9 +474,11 @@ int testPacman() {
 	// Tests unitaires:
 	testsInError += testPacmanTurns();
 	testsInError += testPacmanMoves();
+	testsInError += testPacmanLiveOrDive();
 	testsInError += testPacmanHitsABorder();
-	T6963C_writeAt(15, 15, GHOST);
 	testsInError += testPacmanHitsAGhost();
+	T6963C_writeAt(15, 15, GHOST);
+	
 	// Tests de comportement:
 	//testsInError += bddPacmanHitsAnObstacle();
 	//testsInError += bddPacmanHitsAGhost();
