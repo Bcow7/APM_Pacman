@@ -380,7 +380,7 @@ int testPacmanHitsAGhost(){
 
 int bddPacmanHitsThisObstacle(char obstacle, char *testId) {
 	BddExpectedContent c = {
-		"    0.....",
+		{' ',' ',' ',' ','0',obstacle + 32,'.','.','.','.'},
 		"..........",
 		"..........",
 		"..........",
@@ -392,8 +392,8 @@ int bddPacmanHitsThisObstacle(char obstacle, char *testId) {
 
 	BUFFER_clear();
 	BDD_clear();
-	//T6963C_writeAt(BDD_SCREEN_X + 5, BDD_SCREEN_Y, obstacle);
-
+	
+	T6963C_writeAt(BDD_SCREEN_X + 5, BDD_SCREEN_Y, obstacle);
 	for (n = 0; n < 5; n++) {
 		PACMAN_iterate(&pacman, ARROW_NEUTRAL);
 	}
@@ -429,13 +429,24 @@ int bddPacmanHitsAnObstacle()
 	return testsInError;
 }
 
-/*
-int testPacmanEatsACoin() {
+int bddPacmanHitsAGhost()
+{
 	int testsInError = 0;
-	//A faire
+
+	testsInError += bddPacmanHitsThisObstacle(GHOST, "PMO-GHOST");
 
 	return testsInError;
 }
+
+int testPacmanEatsACoin()
+{
+	int testsInError = 0;
+
+	testsInError += bddPacmanHitsThisObstacle(COIN, "PMO-COIN");
+
+	return testsInError;
+}
+
 /*
 int bddPacmanMovesTurnsAndCatchesACoin() {
 	BddExpectedContent c = {
@@ -484,8 +495,8 @@ int testPacman() {
 	
 	// Tests de comportement:
 	testsInError += bddPacmanHitsAnObstacle();
-	//testsInError += bddPacmanHitsAGhost();
-	//testsInError += testPacmanEatsACoin();
+	testsInError += bddPacmanHitsAGhost();
+	testsInError += testPacmanEatsACoin();
 	//testsInError += bddPacmanMovesTurnsAndCatchesACoin();
 //
 	// Nombre de tests en erreur:
