@@ -30,7 +30,7 @@
 }	
 
 /**
- * Modifie les coordonnées du serpent selon sa direction.
+ * Modifie les coordonnées du ghost selon sa direction.
  * @param GHOST La description du serpent.
  */
 void GHOST_move(Ghost *ghost) {
@@ -167,44 +167,73 @@ Status GHOST_iterate(Ghost *ghost) {
 // ========================== Tests unitaires =================================
 // Chaque test vérifie le comportement d'une fonctionnalité en établissant
 // un état initial et en vérifiant l'état final.
-/*
-int testGhostTurnsTo(Direction currentDirection, Arrow turn, Direction expectedResult, char *testCode) {
-	Ghost ghost = {MOVES_RIGHT, {10, 10},{10,10}, ALIVE};
-	ghost.direction = currentDirection;
-	GHOST_turn(&ghost, turn);
-	return assertEquals(expectedResult, ghost.direction, testCode);	
-}
+
+
 
 int testGhostTurns() {
-	int testsInError = 0;
-	// A Verifier
-	testsInError += testGhostTurnsTo(MOVES_RIGHT, ARROW_RIGHT,	MOVES_RIGHT,"ST01");
-	testsInError += testGhostTurnsTo(MOVES_RIGHT, ARROW_LEFT,	MOVES_RIGHT,"ST02");
-	testsInError += testGhostTurnsTo(MOVES_RIGHT, ARROW_UP,		MOVES_UP, 	"ST03");
-	testsInError += testGhostTurnsTo(MOVES_RIGHT, ARROW_DOWN, 	MOVES_DOWN, "ST04");
+        int testsInError = 0;
+	Ghost ghost;
+	Direction currentDirection;
 
-	testsInError += testGhostTurnsTo(MOVES_LEFT, ARROW_RIGHT, 	MOVES_LEFT, "ST11");
-	testsInError += testGhostTurnsTo(MOVES_LEFT, ARROW_LEFT, 	MOVES_LEFT, "ST12");
-	testsInError += testGhostTurnsTo(MOVES_LEFT, ARROW_UP, 		MOVES_UP, 	"ST13");
-	testsInError += testGhostTurnsTo(MOVES_LEFT, ARROW_DOWN, 	MOVES_DOWN, "ST14");
-
-	testsInError += testGhostTurnsTo(MOVES_UP, ARROW_RIGHT, 	MOVES_RIGHT,"ST21");
-	testsInError += testGhostTurnsTo(MOVES_UP, ARROW_LEFT, 		MOVES_LEFT, "ST22");
-	testsInError += testGhostTurnsTo(MOVES_UP, ARROW_UP, 		MOVES_UP, 	"ST23");
-	testsInError += testGhostTurnsTo(MOVES_UP, ARROW_DOWN, 		MOVES_UP, 	"ST24");
-
-	testsInError += testGhostTurnsTo(MOVES_DOWN, ARROW_RIGHT, 	MOVES_RIGHT,"ST31");
-	testsInError += testGhostTurnsTo(MOVES_DOWN, ARROW_LEFT, 	MOVES_LEFT, "ST32");
-	testsInError += testGhostTurnsTo(MOVES_DOWN, ARROW_UP, 		MOVES_DOWN, "ST33");
-	testsInError += testGhostTurnsTo(MOVES_DOWN, ARROW_DOWN, 	MOVES_DOWN, "ST34");
+	ghost.position.x = 7;
+	ghost.position.y = 11;
+        ghost.direction = MOVES_DOWN;
+	currentDirection = ghost.direction;
+        T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT);
+        T6963C_writeAt(ghost.position.x-1, ghost.position.y, CORNER_TOP_LEFT);
+	T6963C_writeAt(ghost.position.x, ghost.position.y+1, CORNER_TOP_LEFT);
+	while (currentDirection == ghost.direction)
+	{
+	   GHOST_turnRandomDirection(&ghost);
+	}
+	testsInError += assertEquals(ghost.direction,MOVES_UP, "GT001");
+   
+   	ghost.position.x = 7;
+	ghost.position.y = 8;
+        ghost.direction = MOVES_UP;
+	currentDirection = MOVES_UP;
+        T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT);
+        T6963C_writeAt(ghost.position.x-1, ghost.position.y, CORNER_TOP_LEFT);
+	T6963C_writeAt(ghost.position.x, ghost.position.y-1, CORNER_TOP_LEFT);
+	while (currentDirection == ghost.direction)
+	{
+	   GHOST_turnRandomDirection(&ghost);
+	}
+	testsInError += assertEquals(ghost.direction,MOVES_DOWN, "GT002");
+	 
+	ghost.position.x = 7;
+	ghost.position.y = 5;
+        ghost.direction = MOVES_UP;
+	currentDirection = MOVES_UP;
+        T6963C_writeAt(ghost.position.x, ghost.position.y+1, CORNER_TOP_LEFT);
+        T6963C_writeAt(ghost.position.x, ghost.position.y-1, CORNER_TOP_LEFT);
+	T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT);
+	while (currentDirection == ghost.direction)
+	{
+	   GHOST_turnRandomDirection(&ghost);
+	}
+	testsInError += assertEquals(ghost.direction,MOVES_LEFT, "GT003");
+	
+	ghost.position.x = 7;
+	ghost.position.y = 2;
+        ghost.direction = MOVES_UP;
+	currentDirection = MOVES_UP;
+        T6963C_writeAt(ghost.position.x, ghost.position.y+1, CORNER_TOP_LEFT);
+        T6963C_writeAt(ghost.position.x, ghost.position.y-1, CORNER_TOP_LEFT);
+	T6963C_writeAt(ghost.position.x-1, ghost.position.y, CORNER_TOP_LEFT);
+	while (currentDirection == ghost.direction)
+	{
+	   GHOST_turnRandomDirection(&ghost);
+	}
+	testsInError += assertEquals(ghost.direction,MOVES_RIGHT, "GT004");
 
 	return testsInError;
 }
-
+// Vérifie que le ghost ce déplace bien dans les 4 direction
 int testGhostMoves() {
 	int testsInError = 0;
 
-	// A Verifier
+	
 	Ghost ghost;
 
 	ghost.position.x = 10;
@@ -212,62 +241,47 @@ int testGhostMoves() {
 
 	ghost.direction = MOVES_UP;
 	GHOST_move(&ghost);
-	testsInError += assertEquals(9, ghost.position.y, "SM001");
+	testsInError += assertEquals(9, ghost.position.y, "GM001");
 
 	ghost.direction = MOVES_DOWN;
 	GHOST_move(&ghost);
-	testsInError += assertEquals(10, ghost.position.y, "SM002");
+	testsInError += assertEquals(10, ghost.position.y, "GM002");
 
 	ghost.direction = MOVES_LEFT;
 	GHOST_move(&ghost);
-	testsInError += assertEquals( 9, ghost.position.x, "SM003");
+	testsInError += assertEquals( 9, ghost.position.x, "GM003");
 
 	ghost.direction = MOVES_RIGHT;
 	GHOST_move(&ghost);
-	testsInError += assertEquals(10, ghost.position.x, "SM004");
+	testsInError += assertEquals(10, ghost.position.x, "GM004");
 
 	return testsInError;
 }
 
 int testGhostHitsABorder() {
 	int testsInError = 0;
+	int i;
 	
-	// A corriger
 	Ghost ghost;
-
-	ghost.status = ALIVE;
-	ghost.position.x = PACMAN_LIMIT_X0 + 1;
-	ghost.position.y = PACMAN_LIMIT_Y0 + 1;
-	//GHOST_liveOrDie(&ghost);
-	testsInError += assertEquals(ghost.status, ALIVE, "GHB01");
-
-	ghost.status = ALIVE;
-	ghost.position.x = PACMAN_LIMIT_X0;
-	ghost.position.y = PACMAN_LIMIT_Y0 + 1;
-	//GHOST_liveOrDie(&ghost);
-	testsInError += assertEquals(ghost.status, ALIVE, "GHB02");
-
-	ghost.status = ALIVE;
-	ghost.position.x = PACMAN_LIMIT_X0 + 1;
-	ghost.position.y = PACMAN_LIMIT_Y0;
-	//GHOST_liveOrDie(&ghost);
-	testsInError += assertEquals(ghost.status, ALIVE, "GHB03");
-
-	ghost.status = ALIVE;
-	ghost.position.x = PACMAN_LIMIT_X1;
-	ghost.position.y = PACMAN_LIMIT_Y1 - 1;
-	//GHOST_liveOrDie(&ghost);
-	testsInError += assertEquals(ghost.status, ALIVE, "GHB04");
-
-	ghost.status = ALIVE;
-	ghost.position.x = PACMAN_LIMIT_X1 - 1;
-	ghost.position.y = PACMAN_LIMIT_Y1;
-	//GHOST_liveOrDie(&ghost);
-	testsInError += assertEquals(ghost.status, ALIVE, "GHB05");
+	 
+   
+	// Test Si il touche un mur
+	
+        ghost.position.x = 5;
+	ghost.position.y = 10;
+        T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT);
+	for (i = 1 ; i < 17 ;i++){
+	    ghost.direction = MOVES_RIGHT;
+	    GHOST_move(&ghost);
+	    
+	    testsInError += assertEquals(ghost.position.x, 5, "GHAB01");
+	    ghost.position.x = 5;
+	    T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT+1);
+	}
 
 	return testsInError;
 }
-
+/*
 // =========================== Tests de comportement ============================
 // Chaque test:
 // 1- Établit un état initial.
@@ -377,9 +391,9 @@ int testGhost() {
 	int testsInError = 0;
 
 	// Tests unitaires:
-	//testsInError += testGhostTurns();
-	//testsInError += testGhostMoves();
-	//testsInError += testGhostHitsABorder();
+	testsInError += testGhostTurns();
+	testsInError += testGhostMoves();
+	testsInError += testGhostHitsABorder();
 
 	// Tests de comportement:
 	//testsInError += bddGhostHitsAnObstacle();
