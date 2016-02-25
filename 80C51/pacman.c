@@ -15,8 +15,14 @@
  {
 	unsigned char c;
 	c = T6963C_readFrom(x, y);
+
+	// Vérification que ce n'est pas un GHOST
+	if (c == GHOST)
+	{
+	   return false;
+	}
 	// Vérification que ce n'est pas un mur
-	if (c >= CORNER_TOP_LEFT && c <= CORNER_BOTTOM_RIGHT_RIGHT)
+	if (c >= CORNER_TOP_LEFT && c <= SPECIAL_P)
 	{
 	   return false;
 	}
@@ -26,7 +32,7 @@
 
 /**
  * Modifie les coordonnées du PACMAN selon sa direction.
- * @param PACMAN La description du serpent.
+ * @param PACMAN La description du pacman.
  */
 void PACMAN_move(Pacman *pacman) {
 
@@ -370,6 +376,28 @@ int testPacmanHitsAGhost(){
 	return testsInError;
 }
 
+// Véifie que le Pacman vit et passe en status EATING lorsque qu'il touche un coin  
+int testPacmanHitsACoin(){
+
+	int testsInError = 0;
+
+	Pacman pacman;
+
+	pacman.position.x = 10;
+	pacman.position.y = 10;
+	pacman.status = ALIVE;
+
+    T6963C_writeAt(pacman.position.x+1, pacman.position.y, COIN);
+   	pacman.direction = MOVES_RIGHT;
+	PACMAN_move(&pacman);
+	PACMAN_liveOrDie(&pacman);
+
+	testsInError += assertEquals(pacman.status, EATING, "PHAG03");
+	testsInError += assertEqualsStatusString(pacman.status, EATING, "PHAG03");
+
+	return testsInError;
+}
+
 // =========================== Tests de comportement ============================
 // Chaque test:
 // 1- Établit un état initial.
@@ -394,7 +422,7 @@ int bddPacmanHitsThisObstacle(char obstacle, char *testId) {
 	BDD_clear();
 	
 	T6963C_writeAt(BDD_SCREEN_X + 5, BDD_SCREEN_Y, obstacle);
-	for (n = 0; n < 5; n++) {
+	for (n = 0; n < 7; n++) {
 		PACMAN_iterate(&pacman, ARROW_NEUTRAL);
 	}
 
@@ -441,8 +469,28 @@ int bddPacmanHitsAGhost()
 int testPacmanEatsACoin()
 {
 	int testsInError = 0;
+	char *testId ="PMO-COIN";
 
-	testsInError += bddPacmanHitsThisObstacle(COIN, "PMO-COIN");
+	BddExpectedContent c = {
+			{' ',' ',' ',' ',' ',' ','0','.','.','.'},
+			"..........",
+			"..........",
+			"..........",
+			".........."
+		};
+	
+	Pacman pacman = {MOVES_RIGHT, {BDD_SCREEN_X, BDD_SCREEN_Y}, {BDD_SCREEN_X, BDD_SCREEN_Y}, ALIVE};
+	char n;
+
+	BUFFER_clear();
+	BDD_clear();
+	
+	T6963C_writeAt(BDD_SCREEN_X + 5, BDD_SCREEN_Y, COIN);
+	for (n = 0; n < 7; n++) {
+		PACMAN_iterate(&pacman, ARROW_NEUTRAL);
+	}
+
+	testsInError = BDD_assert(c, testId);
 
 	return testsInError;
 }
@@ -491,7 +539,8 @@ int testPacman() {
 	testsInError += testPacmanLiveOrDive();
 	testsInError += testPacmanHitsABorder();
 	testsInError += testPacmanHitsAGhost();
-	T6963C_writeAt(15, 15, GHOST);
+	testsInError += testPacmanHitsACoin();
+	//T6963C_writeAt(15, 15, GHOST);
 	
 	// Tests de comportement:
 	testsInError += bddPacmanHitsAnObstacle();
