@@ -447,7 +447,7 @@ int bddPacmanHitsAGhost()
 	return testsInError;
 }
 
-int testPacmanEatsACoin()
+int bddPacmanEatsACoin()
 {
 	int testsInError = 0;
 	char *testId ="PMO-COIN";
@@ -476,16 +476,15 @@ int testPacmanEatsACoin()
 	return testsInError;
 }
 
-/*
 int bddPacmanMovesTurnsAndCatchesACoin() {
 	BddExpectedContent c = {
-		"      1...",
-		"......2...",
-		"......1...",
-		"...3111...",
+		"       ...",
+		"...... ...",
+		"...... ...",
+		"....5  ...",
 		".........."
 	};
-	Pacman pacman = {MOVES_RIGHT, {BDD_SCREEN_X, BDD_SCREEN_Y}, ALIVE, 3};
+	Pacman pacman = {MOVES_RIGHT, {BDD_SCREEN_X, BDD_SCREEN_Y}, {BDD_SCREEN_X, BDD_SCREEN_Y}, ALIVE};
 	char n;
 
 	BUFFER_clear();
@@ -502,14 +501,9 @@ int bddPacmanMovesTurnsAndCatchesACoin() {
 		PACMAN_iterate(&pacman, ARROW_LEFT);
 	}
 
-	return BDD_assert(c, "SNTF");
+	return BDD_assert(c, "PMO-TACAC");
 }
 
-/**
- * Collection de tests.
- * Les tests en erreur sont affichés à l'écran.
- * @return Le nombre de tests échoués.
-**/
 int testPacman() {
 
 	int testsInError = 0;
@@ -526,9 +520,9 @@ int testPacman() {
 	// Tests de comportement:
 	testsInError += bddPacmanHitsAnObstacle();
 	testsInError += bddPacmanHitsAGhost();
-	testsInError += testPacmanEatsACoin();
-	//testsInError += bddPacmanMovesTurnsAndCatchesACoin();
-//
+	testsInError += bddPacmanEatsACoin();
+	testsInError += bddPacmanMovesTurnsAndCatchesACoin();
+
 	// Nombre de tests en erreur:
 	return testsInError;
 }
