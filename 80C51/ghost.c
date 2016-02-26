@@ -168,15 +168,15 @@ Status GHOST_iterate(Ghost *ghost) {
 // Chaque test vérifie le comportement d'une fonctionnalité en établissant
 // un état initial et en vérifiant l'état final.
 
-
+// test que le ghost tourne dans la bonne direction quand on lui bloque les 3 autres directions
 
 int testGhostTurns() {
         int testsInError = 0;
 	Ghost ghost;
 	Direction currentDirection;
-
-	ghost.position.x = 7;
-	ghost.position.y = 11;
+// doit aller en haut
+	ghost.position.x = BDD_SCREEN_X +2;
+	ghost.position.y = BDD_SCREEN_Y +2;
         ghost.direction = MOVES_DOWN;
 	currentDirection = ghost.direction;
         T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT);
@@ -187,9 +187,10 @@ int testGhostTurns() {
 	   GHOST_turnRandomDirection(&ghost);
 	}
 	testsInError += assertEquals(ghost.direction,MOVES_UP, "GT001");
-   
-   	ghost.position.x = 7;
-	ghost.position.y = 8;
+	BDD_clear();
+ // doit aller en bas 
+	ghost.position.x = BDD_SCREEN_X +2;
+	ghost.position.y = BDD_SCREEN_Y +2;
         ghost.direction = MOVES_UP;
 	currentDirection = MOVES_UP;
         T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT);
@@ -200,22 +201,26 @@ int testGhostTurns() {
 	   GHOST_turnRandomDirection(&ghost);
 	}
 	testsInError += assertEquals(ghost.direction,MOVES_DOWN, "GT002");
-	 
-	ghost.position.x = 7;
-	ghost.position.y = 5;
+	BDD_clear();
+// doit aller en gauche	 
+	ghost.position.x = BDD_SCREEN_X +2;
+	ghost.position.y = BDD_SCREEN_Y +2;
         ghost.direction = MOVES_UP;
 	currentDirection = MOVES_UP;
-        T6963C_writeAt(ghost.position.x, ghost.position.y+1, CORNER_TOP_LEFT);
-        T6963C_writeAt(ghost.position.x, ghost.position.y-1, CORNER_TOP_LEFT);
+        T6963C_writeAt(ghost.position.x, ghost.position.y +1, CORNER_TOP_LEFT);
+        T6963C_writeAt(ghost.position.x, ghost.position.y -1, CORNER_TOP_LEFT);
 	T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT);
-	while (currentDirection == ghost.direction)
+	// La boucle while n'est pas dans la fonction car cela n'est pas possible à cause du compliateur "excedent de ram"
+	while (currentDirection == ghost.direction)// 
 	{
 	   GHOST_turnRandomDirection(&ghost);
 	}
 	testsInError += assertEquals(ghost.direction,MOVES_LEFT, "GT003");
+	BDD_clear();
 	
-	ghost.position.x = 7;
-	ghost.position.y = 2;
+// doit aller en droite	
+	ghost.position.x = BDD_SCREEN_X +2;
+	ghost.position.y = BDD_SCREEN_Y +2;
         ghost.direction = MOVES_UP;
 	currentDirection = MOVES_UP;
         T6963C_writeAt(ghost.position.x, ghost.position.y+1, CORNER_TOP_LEFT);
@@ -226,6 +231,7 @@ int testGhostTurns() {
 	   GHOST_turnRandomDirection(&ghost);
 	}
 	testsInError += assertEquals(ghost.direction,MOVES_RIGHT, "GT004");
+	BDD_clear();
 
 	return testsInError;
 }

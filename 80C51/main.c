@@ -63,7 +63,8 @@ void main(void) {
 	//testsInError += testKeyboard();
 	//testsInError += testFruit();
 	testsInError += testGameboard();
-    testsInError += testPacman();
+	testsInError += testPacman();
+	testsInError += testGhost();
 
 	printf("%d tests en erreur", testsInError);
 
