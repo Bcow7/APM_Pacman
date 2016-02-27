@@ -2,21 +2,23 @@
 #include "test.h"
 #include "bdd.h"
 #include "t6963c.h"
+#include "buffer.h"
 #include "gameboard.h"
+#include "pacman.h"
 #include "ghost.h"
-#include "main.h"
 
 
 /**
- * Modifie les coordonnées du serpent selon sa direction.
- * @param GHOST La description du serpent.
+ * Modifie les coordonnées du GHOST selon sa direction.
+ * @param x et y, position future du GHOST.
  */
+
  bool GHOST_isFreeSpace(unsigned char x, unsigned char y)
  {
 	unsigned char c;
 	c = T6963C_readFrom(x, y);
 	
-	if (c >= CORNER_TOP_LEFT && c <= CORNER_BOTTOM_RIGHT_RIGHT) 
+	if (c >= CORNER_TOP_LEFT && c <= SPECIAL_P) 
 	{
 	   // Vérification que ce n'est pas un mur
 	   return false;
@@ -31,7 +33,7 @@
 
 /**
  * Modifie les coordonnées du ghost selon sa direction.
- * @param GHOST La description du serpent.
+ * @param GHOST La description du ghost.
  */
 void GHOST_move(Ghost *ghost) {
 	
@@ -121,9 +123,9 @@ void GHOST_show(Ghost *ghost)
 
 
 /**
- * Décide de varier la direction du serpent selon la direction indiquée.
- * Le serpent ne peut jamais tourner de 180º en un mouvement.
- * @param GHOST La description du serpent.
+ * Décide de varier la direction du ghost aléatoirement.
+ * change de direction si il n'y a pas d'obstacle
+ * @param GHOST La description du ghost.
  */
 void GHOST_turnRandomDirection(Ghost *ghost) 
 {   
@@ -169,63 +171,78 @@ Status GHOST_iterate(Ghost *ghost) {
 // un état initial et en vérifiant l'état final.
 
 // test que le ghost tourne dans la bonne direction quand on lui bloque les 3 autres directions
-
-int testGhostTurns() {
-        int testsInError = 0;
+int testGhostTurns() 
+{
+    int testsInError = 0;
 	Ghost ghost;
 	Direction currentDirection;
-// doit aller en haut
+
+	// doit aller en haut
 	ghost.position.x = BDD_SCREEN_X +2;
 	ghost.position.y = BDD_SCREEN_Y +2;
-        ghost.direction = MOVES_DOWN;
+    ghost.direction = MOVES_DOWN;
+
 	currentDirection = ghost.direction;
-        T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT);
-        T6963C_writeAt(ghost.position.x-1, ghost.position.y, CORNER_TOP_LEFT);
+
+    T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT);
+    T6963C_writeAt(ghost.position.x-1, ghost.position.y, CORNER_TOP_LEFT);
 	T6963C_writeAt(ghost.position.x, ghost.position.y+1, CORNER_TOP_LEFT);
+
 	while (currentDirection == ghost.direction)
 	{
 	   GHOST_turnRandomDirection(&ghost);
 	}
 	testsInError += assertEquals(ghost.direction,MOVES_UP, "GT001");
 	BDD_clear();
- // doit aller en bas 
+
+	// doit aller en bas 
 	ghost.position.x = BDD_SCREEN_X +2;
 	ghost.position.y = BDD_SCREEN_Y +2;
-        ghost.direction = MOVES_UP;
+    ghost.direction = MOVES_UP;
+
 	currentDirection = MOVES_UP;
-        T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT);
-        T6963C_writeAt(ghost.position.x-1, ghost.position.y, CORNER_TOP_LEFT);
+
+    T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT);
+    T6963C_writeAt(ghost.position.x-1, ghost.position.y, CORNER_TOP_LEFT);
 	T6963C_writeAt(ghost.position.x, ghost.position.y-1, CORNER_TOP_LEFT);
+
 	while (currentDirection == ghost.direction)
 	{
 	   GHOST_turnRandomDirection(&ghost);
 	}
 	testsInError += assertEquals(ghost.direction,MOVES_DOWN, "GT002");
 	BDD_clear();
-// doit aller en gauche	 
+
+	// doit aller à gauche	 
 	ghost.position.x = BDD_SCREEN_X +2;
 	ghost.position.y = BDD_SCREEN_Y +2;
-        ghost.direction = MOVES_UP;
+    ghost.direction = MOVES_UP;
+
 	currentDirection = MOVES_UP;
-        T6963C_writeAt(ghost.position.x, ghost.position.y +1, CORNER_TOP_LEFT);
-        T6963C_writeAt(ghost.position.x, ghost.position.y -1, CORNER_TOP_LEFT);
+
+    T6963C_writeAt(ghost.position.x, ghost.position.y +1, CORNER_TOP_LEFT);
+    T6963C_writeAt(ghost.position.x, ghost.position.y -1, CORNER_TOP_LEFT);
 	T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT);
+
 	// La boucle while n'est pas dans la fonction car cela n'est pas possible à cause du compliateur "excedent de ram"
-	while (currentDirection == ghost.direction)// 
+	while (currentDirection == ghost.direction)
 	{
 	   GHOST_turnRandomDirection(&ghost);
 	}
 	testsInError += assertEquals(ghost.direction,MOVES_LEFT, "GT003");
 	BDD_clear();
 	
-// doit aller en droite	
+	// doit aller à droite	
 	ghost.position.x = BDD_SCREEN_X +2;
 	ghost.position.y = BDD_SCREEN_Y +2;
-        ghost.direction = MOVES_UP;
+    ghost.direction = MOVES_UP;
+
 	currentDirection = MOVES_UP;
-        T6963C_writeAt(ghost.position.x, ghost.position.y+1, CORNER_TOP_LEFT);
-        T6963C_writeAt(ghost.position.x, ghost.position.y-1, CORNER_TOP_LEFT);
+
+    T6963C_writeAt(ghost.position.x, ghost.position.y+1, CORNER_TOP_LEFT);
+    T6963C_writeAt(ghost.position.x, ghost.position.y-1, CORNER_TOP_LEFT);
 	T6963C_writeAt(ghost.position.x-1, ghost.position.y, CORNER_TOP_LEFT);
+
 	while (currentDirection == ghost.direction)
 	{
 	   GHOST_turnRandomDirection(&ghost);
@@ -235,8 +252,10 @@ int testGhostTurns() {
 
 	return testsInError;
 }
+
 // Vérifie que le ghost ce déplace bien dans les 4 direction
-int testGhostMoves() {
+int testGhostMoves()
+{
 	int testsInError = 0;
 
 	
@@ -264,18 +283,19 @@ int testGhostMoves() {
 	return testsInError;
 }
 
-int testGhostHitsABorder() {
+// Véifie que le Ghost, lorsque qu'il touche un mur, ne meure pas et s'arrete
+int testGhostHitsABorder() 
+{
 	int testsInError = 0;
 	int i;
 	
 	Ghost ghost;
-	 
-   
+	   
 	// Test Si il touche un mur
-	
-        ghost.position.x = 5;
+	ghost.position.x = 5;
 	ghost.position.y = 10;
-        T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT);
+    T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT);
+
 	for (i = 1 ; i < 17 ;i++){
 	    ghost.direction = MOVES_RIGHT;
 	    GHOST_move(&ghost);
@@ -287,6 +307,29 @@ int testGhostHitsABorder() {
 
 	return testsInError;
 }
+
+// Véifie que le Ghost vit et passe sur le COIN  
+int testGhostHitsACoin()
+{
+
+	int testsInError = 0;
+
+	Pacman pacman;
+
+	pacman.position.x = 10;
+	pacman.position.y = 10;
+	pacman.status = ALIVE;
+
+    T6963C_writeAt(pacman.position.x+1, pacman.position.y, COIN);
+   	pacman.direction = MOVES_RIGHT;
+	PACMAN_move(&pacman);
+	PACMAN_liveOrDie(&pacman);
+
+	testsInError += assertEquals(pacman.status, EATING, "PHAG03");
+	testsInError += assertEqualsStatusString(pacman.status, EATING, "PHAG03");
+
+	return testsInError;
+}
 /*
 // =========================== Tests de comportement ============================
 // Chaque test:
@@ -295,71 +338,114 @@ int testGhostHitsABorder() {
 // 3- Vérifie, en contrôlant le contenu de l'écran, que ce 
 //    que percevrait l'utilisateur est juste
 
+/**
+ * Vérifie que le pacman s'arrête si il y a un mur dans sa position futur
+ * @param obstacle, obstacle dessiner dans le gameboard
+ * @param testId, code d'erreur affiché si l'ecran, à la fin du test,  ne correspond pas au BddExpectedContent
+ */
+int bddGhostHitsThisObstacle(char obstacle, char *testId) 
+{
 
-int bddGhostHitsThisObstacle(char obstacle, char *testId) {
 	BddExpectedContent c = {
-		"  1114....",
-		"..........",
-		"..........",
+		{'.','.','.','.',obstacle + 32,'.','.','.','.','.'},
+		{'.','.','.',obstacle + 32,' ',obstacle + 32,'.','.','.','.'},
+		{'.','.','.','.','9','.','.','.','.','.'},
 		"..........",
 		".........."
 	};
-	Ghost ghost = {MOVES_RIGHT, {BDD_SCREEN_X, BDD_SCREEN_Y}, ALIVE, 3};
+	
+	Ghost ghost = {MOVES_NONE, {BDD_SCREEN_X+4, BDD_SCREEN_Y+1}, {BDD_SCREEN_X, BDD_SCREEN_Y},  HUNTER};
+
 	char n;
 
 	BUFFER_clear();
 	BDD_clear();
-	T6963C_writeAt(BDD_SCREEN_X + 5, BDD_SCREEN_Y, obstacle);
 	
-	for (n = 0; n < 5; n++) {
-		GHOST_iterate(&ghost);//, ARROW_NEUTRAL);
+	T6963C_writeAt(BDD_SCREEN_X + 4, BDD_SCREEN_Y, obstacle);
+	T6963C_writeAt(BDD_SCREEN_X + 5, BDD_SCREEN_Y+1, obstacle);
+	T6963C_writeAt(BDD_SCREEN_X + 3, BDD_SCREEN_Y+1, obstacle);
+	for (n = 0; n < 3; n++) {
+		GHOST_iterate(&ghost);	
 	}
 
 	return BDD_assert(c, testId);
 }
 
+
+// Vérifie que le Ghost s'arrête pour chaque obstacle crée pour dessiner le jeu
 int bddGhostHitsAnObstacle() 
 {
 	int testsInError = 0;
 	
-	// Mis a jour le 22.01.2016 Seb
-	testsInError += bddGhostHitsThisObstacle(CORNER_TOP_LEFT, "PMO-CTF");
-	testsInError += bddGhostHitsThisObstacle(CORNER_BOTTOM_LEFT, "PMO-CBL");
-	testsInError += bddGhostHitsThisObstacle(CORNER_TOP_RIGHT, "PMO-CTR");
-	testsInError += bddGhostHitsThisObstacle(CORNER_BOTTOM_RIGHT, "PMO-CBR");
+	testsInError += bddGhostHitsThisObstacle(CORNER_TOP_LEFT, "GHO-CTF");
+	testsInError += bddGhostHitsThisObstacle(CORNER_BOTTOM_LEFT, "GHO-CBL");
+	testsInError += bddGhostHitsThisObstacle(CORNER_TOP_RIGHT, "GHO-CTR");
+	testsInError += bddGhostHitsThisObstacle(CORNER_BOTTOM_RIGHT, "GHO-CBR");
 
-	testsInError += bddGhostHitsThisObstacle(T_TOP_HORIZONTAL, "PMO-TTH");
-	testsInError += bddGhostHitsThisObstacle(T_BOTTOM_HORIZONTAL, "PMO-TBH");
-	testsInError += bddGhostHitsThisObstacle(T_LEFT_VERTICAL, "PMO-TLV");
-	testsInError += bddGhostHitsThisObstacle(T_RIGHT_VERTICAL, "PMO-TRV");
+	testsInError += bddGhostHitsThisObstacle(T_TOP_HORIZONTAL, "GHO-TTH");
+	testsInError += bddGhostHitsThisObstacle(T_BOTTOM_HORIZONTAL, "GHO-TBH");
+	testsInError += bddGhostHitsThisObstacle(T_LEFT_VERTICAL, "GHO-TLV");
+	testsInError += bddGhostHitsThisObstacle(T_RIGHT_VERTICAL, "GHO-TRV");
 
-	testsInError += bddGhostHitsThisObstacle(LINE_TOP_HORIZONTAL, "PMO-LTH");
-	testsInError += bddGhostHitsThisObstacle(LINE_CENTER_HORIZONTAL, "PMO-LCH");
-	testsInError += bddGhostHitsThisObstacle(LINE_BOTTOM_HORIZONTAL, "PMO-LBH");
+	testsInError += bddGhostHitsThisObstacle(LINE_TOP_HORIZONTAL, "GHO-LTH");
+	testsInError += bddGhostHitsThisObstacle(LINE_CENTER_HORIZONTAL, "GHO-LCH");
+	testsInError += bddGhostHitsThisObstacle(LINE_BOTTOM_HORIZONTAL, "GHO-LBH");
 
-	testsInError += bddGhostHitsThisObstacle(LINE_LEFT_VERTICAL, "PMO-LLV");
-	testsInError += bddGhostHitsThisObstacle(LINE_CENTER_VERTICAL, "PMO-LCV");
-	testsInError += bddGhostHitsThisObstacle(LINE_RIGHT_VERTICAL, "PMO-LRV");
+	testsInError += bddGhostHitsThisObstacle(LINE_LEFT_VERTICAL, "GHO-LLV");
+	testsInError += bddGhostHitsThisObstacle(LINE_CENTER_VERTICAL, "GHO-LCV");
+	testsInError += bddGhostHitsThisObstacle(LINE_RIGHT_VERTICAL, "GHO-LRV");
+	testsInError += bddGhostHitsThisObstacle(CORNER_BOTTOM_LEFT_LEFT, "GHO-CBLL");
+	testsInError += bddGhostHitsThisObstacle(CORNER_BOTTOM_RIGHT_RIGHT, "GHO-CBRR");
+	testsInError += bddGhostHitsThisObstacle(SPECIAL_P, "GHO-S_P");
 
 	return testsInError;
 }
 
+// Vérifie que le Ghost change de direction si c'est un autre Ghost
 int bddGhostHitsAGhost() 
 {
 	int testsInError = 0;
 
-	//A créer
+	testsInError += bddGhostHitsThisObstacle(GHOST, "GHO-GHOST");
 
 	return testsInError;
 }
 
-int testGhostEatsACoin() {
+// Vérifie que le ghost continue son chemmin et ne mange pas le COIN
+int bddGhostHitsACoin() 
+{
 	int testsInError = 0;
-	//A faire
+	char *testId ="GHO-COIN";
 
-	return testsInError;	
+	BddExpectedContent c = {
+		{'.','.','.','.',CORNER_TOP_LEFT + 32,'.','.','.','.','.'},
+		{'.','.','.',CORNER_TOP_LEFT + 32,' ',CORNER_TOP_LEFT + 32,'.','.','.','.'},
+		{'.','.','.',CORNER_TOP_LEFT + 32,COIN + 32,CORNER_TOP_LEFT + 32,'.','.','.','.'},
+		{'.','.','.','.','9','.','.','.','.','.'},
+		".........."
+	};
+	
+	Ghost ghost = {MOVES_NONE, {BDD_SCREEN_X+4, BDD_SCREEN_Y+1}, {BDD_SCREEN_X, BDD_SCREEN_Y},  HUNTER};
+
+	char n;
+
+	BUFFER_clear();
+	BDD_clear();
+	
+	T6963C_writeAt(BDD_SCREEN_X + 4, BDD_SCREEN_Y, CORNER_TOP_LEFT);
+	T6963C_writeAt(BDD_SCREEN_X + 5, BDD_SCREEN_Y+1, CORNER_TOP_LEFT);
+	T6963C_writeAt(BDD_SCREEN_X + 3, BDD_SCREEN_Y+1, CORNER_TOP_LEFT);
+	T6963C_writeAt(BDD_SCREEN_X + 5, BDD_SCREEN_Y+2, CORNER_TOP_LEFT);
+	T6963C_writeAt(BDD_SCREEN_X + 3, BDD_SCREEN_Y+2, CORNER_TOP_LEFT);
+	T6963C_writeAt(BDD_SCREEN_X + 4, BDD_SCREEN_Y+2, COIN);
+
+	for (n = 0; n < 4; n++) {
+		GHOST_iterate(&ghost);	
+	}
+
+	return BDD_assert(c, testId);
 }
-
+/*
 int bddGhostMovesTurnsAndCatchesACoin() {
 	BddExpectedContent c = {
 		"      1...",
@@ -403,8 +489,8 @@ int testGhost() {
 
 	// Tests de comportement:
 	//testsInError += bddGhostHitsAnObstacle();
-	//testsInError += bddGhostHitsAGhost();
-	//testsInError += testGhostEatsACoin();
+	testsInError += bddGhostHitsAGhost();
+	testsInError += bddGhostHitsACoin();
 	//testsInError += bddGhostMovesTurnsAndCatchesACoin();
 
 	// Nombre de tests en erreur:

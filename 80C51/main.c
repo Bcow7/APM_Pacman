@@ -58,10 +58,6 @@ void main(void) {
 	int testsInError = 0;
 	STDIO_initialize();
 
-	//testsInError += testBuffer();
-	//testsInError += testSnake();
-	//testsInError += testKeyboard();
-	//testsInError += testFruit();
 	testsInError += testGameboard();
 	testsInError += testPacman();
 	testsInError += testGhost();

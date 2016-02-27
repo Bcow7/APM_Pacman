@@ -9,7 +9,7 @@
 
 /**
  * Modifie les coordonnées du PACMAN selon sa direction.
- * @param PACMAN La description du serpent.
+ * @param x et y, position future du pacman.
  */
  bool PACMAN_isFreeSpace(unsigned char x, unsigned char y)
  {
@@ -207,15 +207,8 @@ Status PACMAN_iterate(Pacman *pacman, Arrow arrow) {
 // ========================== Tests unitaires =================================
 // Chaque test vérifie le comportement d'une fonctionnalité en établissant
 // un état initial et en vérifiant l'état final.
-int testPacmanTurnsTo(Direction currentDirection, Arrow turn, Direction expectedResult, char *testCode) {
-	Pacman pacman = {MOVES_RIGHT, {10, 10},{10,10}, ALIVE};
-	pacman.direction = currentDirection;
-	PACMAN_turn(&pacman, turn);
-	return assertEquals(expectedResult, pacman.direction, testCode);
-}
 
-// Test que le pacman peut ce diriger dans tout les direction quelque soit sont sens de déplacment
-
+//Test des différent etat du pacman
 int testPacmanLiveOrDive() {
 	int testsInError = 0;
 
@@ -246,6 +239,22 @@ int testPacmanLiveOrDive() {
 
 	return testsInError;
 }
+
+/**
+ * Test si le pacman tourne vers la bonne direction
+ * @param currentDirection, direction courrant du pacman
+ * @param turn La direction désirée.
+ * @param expectedResult, resultat espéré
+ * @param testCode, code d'erreur affiché si pacman.direction != expectedResult
+ */
+int testPacmanTurnsTo(Direction currentDirection, Arrow turn, Direction expectedResult, char *testCode) {
+	Pacman pacman = {MOVES_RIGHT, {10, 10},{10,10}, ALIVE};
+	pacman.direction = currentDirection;
+	PACMAN_turn(&pacman, turn);
+	return assertEquals(expectedResult, pacman.direction, testCode);
+}
+
+// Test que le pacman peut ce diriger dans tout les direction quelque soit sont sens de déplacment
 int testPacmanTurns() {
 	int testsInError = 0;
 
@@ -273,7 +282,6 @@ int testPacmanTurns() {
 }
 
 // Vérifie que le pacamn ce déplace bien dans les 4 direction
-
 int testPacmanMoves() {
 	int testsInError = 0;
 
@@ -301,7 +309,7 @@ int testPacmanMoves() {
 	return testsInError;
 }
 
-// Véifie que le Pacman lorsque qu'il touche un mur ne meure pas et s'arrete Rui
+// Véifie que le Pacman lorsque qu'il touche un mur ne meure pas et s'arrete
 int testPacmanHitsABorder() {
 	int testsInError = 0;
 	int i;
@@ -386,8 +394,14 @@ int testPacmanHitsACoin(){
 // 3- Vérifie, en contrôlant le contenu de l'écran, que ce
 //    que percevrait l'utilisateur est juste
 
+/**
+ * Vérifie que le pacman s'arrête si il y a un mur dans sa position futur
+ * @param obstacle, obstacle dessiner dans le gameboard
+ * @param testId, code d'erreur affiché si l'ecran, à la fin du test,  ne correspond pas au BddExpectedContent
+ */
 
-int bddPacmanHitsThisObstacle(char obstacle, char *testId) {
+int bddPacmanHitsThisObstacle(char obstacle, char *testId) 
+{
 	BddExpectedContent c = {
 		{' ',' ',' ',' ','0',obstacle + 32,'.','.','.','.'},
 		"..........",
@@ -410,6 +424,7 @@ int bddPacmanHitsThisObstacle(char obstacle, char *testId) {
 	return BDD_assert(c, testId);
 }
 
+// Vérifie que le pacman s'arrête pour chaque obstacle crée pour dessiner le jeu
 int bddPacmanHitsAnObstacle()
 {
 	int testsInError = 0;
@@ -438,6 +453,7 @@ int bddPacmanHitsAnObstacle()
 	return testsInError;
 }
 
+// Vérifie que le pacman s'arrête si l'obstacle et un GHOST
 int bddPacmanHitsAGhost()
 {
 	int testsInError = 0;
@@ -447,6 +463,7 @@ int bddPacmanHitsAGhost()
 	return testsInError;
 }
 
+// Vérifie que le pacman continue son chemmin et mange le COIN
 int bddPacmanEatsACoin()
 {
 	int testsInError = 0;
@@ -476,6 +493,7 @@ int bddPacmanEatsACoin()
 	return testsInError;
 }
 
+//test d'un déplacement avec plusieur direction et mange bien le COIN sur son chemin
 int bddPacmanMovesTurnsAndCatchesACoin() {
 	BddExpectedContent c = {
 		"       ...",
@@ -503,6 +521,12 @@ int bddPacmanMovesTurnsAndCatchesACoin() {
 
 	return BDD_assert(c, "PMO-TACAC");
 }
+
+/**
+ * Collection de tests.
+ * Les tests en erreur sont affichés à l'écran.
+ * @return Le nombre de tests échoués.
+ */
 
 int testPacman() {
 
