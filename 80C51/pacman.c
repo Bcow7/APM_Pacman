@@ -16,17 +16,18 @@
 	unsigned char c;
 	c = T6963C_readFrom(x, y);
 
-	// Vérification que ce n'est pas un GHOST
-	if (c == GHOST)
+	//chararctère de base qui fait office de mur
+	if (c >= CORNER_TOP_LEFT && c <= LINE_RIGHT_VERTICAL) 
 	{
-	   return false;
+	   return false;	   
 	}
-	// Vérification que ce n'est pas un mur
-	if (c >= CORNER_TOP_LEFT && c <= SPECIAL_P)
+	//caractère ajouter par la suite qui fait office de mur
+	if (c == CORNER_BOTTOM_LEFT_LEFT ||
+		c == CORNER_BOTTOM_RIGHT_RIGHT ||
+		c == SPECIAL_P)
 	{
-	   return false;
+	   return false;	   
 	}
-
 	return true;
 }
 
@@ -327,15 +328,15 @@ int testPacmanHitsABorder() {
 
 	// Test Si il touche un mur
 	
-        pacman.position.x = 10;
-	pacman.position.y = 10;
+    pacman.position.x = BDD_SCREEN_X + 2;
+	pacman.position.y = BDD_SCREEN_Y + 2;
 	pacman.status = ALIVE;
         T6963C_writeAt(pacman.position.x+1, pacman.position.y, CORNER_TOP_LEFT );
 	for (i = 1 ; i < 17 ;i++){
 	    pacman.direction = MOVES_RIGHT;
 	    PACMAN_move(&pacman);
 	    
-	    testsInError += assertEquals(pacman.position.x, 10, "PHAB2");
+	    testsInError += assertEquals(pacman.position.x, BDD_SCREEN_X + 2, "PHAB2");
 	    pacman.position.x = 10;
 	    T6963C_writeAt(pacman.position.x+1, pacman.position.y, CORNER_TOP_LEFT+1);
 	}

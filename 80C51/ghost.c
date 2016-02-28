@@ -18,15 +18,25 @@
 	unsigned char c;
 	c = T6963C_readFrom(x, y);
 	
-	if (c >= CORNER_TOP_LEFT && c <= SPECIAL_P) 
+	//chararctère de base qui fait office de mur
+	if (c >= CORNER_TOP_LEFT && c <= LINE_RIGHT_VERTICAL) 
 	{
-	   // Vérification que ce n'est pas un mur
+	   return false;	   
+	}
+	
+	//caractère ajouter par la suite qui fait office de mur
+	if (c == CORNER_BOTTOM_LEFT_LEFT ||
+		c == CORNER_BOTTOM_RIGHT_RIGHT ||
+		c == SPECIAL_P)
+	{
+	   return false;	   
+	}
+
+	// Il y a déjà un fantome sur cette case
+	if (c == GHOST) 
+	{
 	   return false;
-	   
-	}/* else if (c == GHOST) {
-	   // Il y a déjà un fantome sur cette case
-	   return false;
-	}*/
+	}
 	
 	return true;
 }	
@@ -261,24 +271,24 @@ int testGhostMoves()
 	
 	Ghost ghost;
 
-	ghost.position.x = 10;
-	ghost.position.y = 10;
+	ghost.position.x = 5;
+	ghost.position.y = 5;
 
 	ghost.direction = MOVES_UP;
 	GHOST_move(&ghost);
-	testsInError += assertEquals(9, ghost.position.y, "GM001");
+	testsInError += assertEquals(4, ghost.position.y, "GM001");
 
 	ghost.direction = MOVES_DOWN;
 	GHOST_move(&ghost);
-	testsInError += assertEquals(10, ghost.position.y, "GM002");
+	testsInError += assertEquals(5, ghost.position.y, "GM002");
 
 	ghost.direction = MOVES_LEFT;
 	GHOST_move(&ghost);
-	testsInError += assertEquals( 9, ghost.position.x, "GM003");
+	testsInError += assertEquals(4, ghost.position.x, "GM003");
 
 	ghost.direction = MOVES_RIGHT;
 	GHOST_move(&ghost);
-	testsInError += assertEquals(10, ghost.position.x, "GM004");
+	testsInError += assertEquals(5, ghost.position.x, "GM004");
 
 	return testsInError;
 }
@@ -325,8 +335,8 @@ int testGhostHitsACoin()
 	PACMAN_move(&pacman);
 	PACMAN_liveOrDie(&pacman);
 
-	testsInError += assertEquals(pacman.status, EATING, "PHAG03");
-	testsInError += assertEqualsStatusString(pacman.status, EATING, "PHAG03");
+	testsInError += assertEquals(pacman.status, EATING, "GHAC01");
+	testsInError += assertEqualsStatusString(pacman.status, EATING, "GHAC01");
 
 	return testsInError;
 }
@@ -445,34 +455,6 @@ int bddGhostHitsACoin()
 
 	return BDD_assert(c, testId);
 }
-/*
-int bddGhostMovesTurnsAndCatchesACoin() {
-	BddExpectedContent c = {
-		"      1...",
-		"......2...",
-		"......1...",
-		"...3111...",
-		".........."
-	};
-	Ghost ghost = {MOVES_RIGHT, {BDD_SCREEN_X, BDD_SCREEN_Y}, ALIVE, 3};
-	char n;
-
-	BUFFER_clear();
-	BDD_clear();
-	T6963C_writeAt(BDD_SCREEN_X + 6, BDD_SCREEN_Y + 1, COIN);
-	
-	for (n = 0; n < 6; n++) {
-		GHOST_iterate(&ghost);//, ARROW_NEUTRAL);
-	}
-	for (n = 0; n < 3; n++) {
-		GHOST_iterate(&ghost);//, ARROW_DOWN);
-	}
-	for (n = 0; n < 3; n++) {
-		GHOST_iterate(&ghost);//, ARROW_LEFT);
-	}
-
-	return BDD_assert(c, "SNTF");
-}
 
 /**
  * Collection de tests.
@@ -488,10 +470,9 @@ int testGhost() {
 	testsInError += testGhostHitsABorder();
 
 	// Tests de comportement:
-	//testsInError += bddGhostHitsAnObstacle();
+	testsInError += bddGhostHitsAnObstacle();
 	testsInError += bddGhostHitsAGhost();
 	testsInError += bddGhostHitsACoin();
-	//testsInError += bddGhostMovesTurnsAndCatchesACoin();
 
 	// Nombre de tests en erreur:
 	return testsInError;
