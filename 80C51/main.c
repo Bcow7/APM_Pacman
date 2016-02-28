@@ -34,8 +34,8 @@ void play() {
 		arrow = KEYBOARD_readArrows(keyboard);
 	
 		PACMAN_iterate(&pacman, arrow);
-		GHOST_iterate(&ghost1);
-	    GHOST_iterate(&ghost2);
+		GHOST_iterate(&ghost2);
+	    GHOST_iterate(&ghost1);
 
 		pause(20000);
 	} while (pacman.status != DEAD);

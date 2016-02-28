@@ -28,6 +28,12 @@
 	{
 	   return false;	   
 	}
+	
+	// Il y a déjà un fantome sur cette case
+	if (c == GHOST) 
+	{
+	   return false;
+	}
 	return true;
 }
 
