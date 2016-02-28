@@ -292,16 +292,17 @@ int testGhostHitsABorder()
 	Ghost ghost;
 	   
 	// Test Si il touche un mur
-	ghost.position.x = 5;
-	ghost.position.y = 10;
-    T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT);
+	ghost.position.x = BDD_SCREEN_X +2;
+	ghost.position.y = BDD_SCREEN_Y +2;
+        T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT);
 
 	for (i = 1 ; i < 17 ;i++){
 	    ghost.direction = MOVES_RIGHT;
 	    GHOST_move(&ghost);
 	    
-	    testsInError += assertEquals(ghost.position.x, 5, "GHAB01");
-	    ghost.position.x = 5;
+	    testsInError += assertEquals(ghost.position.x, BDD_SCREEN_X +2, "GHAB01");
+	    BDD_clear();
+	    ghost.position.x = BDD_SCREEN_X +2;
 	    T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT+1);
 	}
 
