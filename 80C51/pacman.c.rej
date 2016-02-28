@@ -1,0 +1,27 @@
+diff a/80C51/pacman.c b/80C51/pacman.c	(rejected hunks)
+@@ -16,17 +16,18 @@
+ 	unsigned char c;
+ 	c = T6963C_readFrom(x, y);
+ 
+-	// Vérification que ce n'est pas un GHOST
+-	if (c == GHOST)
++	//chararctère de base qui fait office de mur
++	if (c >= CORNER_TOP_LEFT && c <= LINE_RIGHT_VERTICAL) 
+ 	{
+-	   return false;
++	   return false;	   
+ 	}
+-	// Vérification que ce n'est pas un mur
+-	if (c >= CORNER_TOP_LEFT && c <= SPECIAL_P)
++	//caractère ajouter par la suite qui fait office de mur
++	if (c == CORNER_BOTTOM_LEFT_LEFT ||
++		c == CORNER_BOTTOM_RIGHT_RIGHT ||
++		c == SPECIAL_P)
+ 	{
+-	   return false;
++	   return false;	   
+ 	}
+-
+ 	return true;
+ }
+ 

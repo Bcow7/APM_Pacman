@@ -327,17 +327,19 @@ int testPacmanHitsABorder() {
 	testsInError += assertEqualsStatusString(pacman.status, ALIVE, "PHAB01");
 
 	// Test Si il touche un mur
-	
-    pacman.position.x = BDD_SCREEN_X + 2;
+    
+	pacman.position.x = BDD_SCREEN_X + 2;
 	pacman.position.y = BDD_SCREEN_Y + 2;
+
 	pacman.status = ALIVE;
         T6963C_writeAt(pacman.position.x+1, pacman.position.y, CORNER_TOP_LEFT );
 	for (i = 1 ; i < 17 ;i++){
 	    pacman.direction = MOVES_RIGHT;
-	    PACMAN_move(&pacman);
-	    
+	    PACMAN_move(&pacman);	
 	    testsInError += assertEquals(pacman.position.x, BDD_SCREEN_X + 2, "PHAB2");
-	    pacman.position.x = 10;
+	    BDD_clear();
+	    pacman.position.x = BDD_SCREEN_X +2;
+
 	    T6963C_writeAt(pacman.position.x+1, pacman.position.y, CORNER_TOP_LEFT+1);
 	}
 
