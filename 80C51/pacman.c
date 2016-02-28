@@ -32,7 +32,7 @@
 	// Il y a déjà un fantome sur cette case
 	if (c == GHOST) 
 	{
-	   return false;
+	   return true;
 	}
 	return true;
 }
@@ -221,8 +221,8 @@ int testPacmanLiveOrDive() {
 
 	Pacman pacman;
 
-	pacman.position.x = 10;
-	pacman.position.y = 10;
+	pacman.position.x = BDD_SCREEN_X + 2;
+	pacman.position.y = BDD_SCREEN_Y + 2;
 	pacman.status = ALIVE;
 
 	// Test Si il est sur un COIN
@@ -243,7 +243,7 @@ int testPacmanLiveOrDive() {
 	testsInError += assertEquals(pacman.status, DEAD, "PLOD03");
 	testsInError += assertEqualsStatusString(pacman.status, DEAD, "PLOD03");
 
-
+	BDD_clear();
 	return testsInError;
 }
 
@@ -294,25 +294,26 @@ int testPacmanMoves() {
 
 	Pacman pacman;
 
-	pacman.position.x = 10;
-	pacman.position.y = 10;
+	pacman.position.x = BDD_SCREEN_X + 2;
+	pacman.position.y = BDD_SCREEN_Y + 2;
 
 	pacman.direction = MOVES_UP;
 	PACMAN_move(&pacman);
-	testsInError += assertEquals(pacman.position.y,9 , "PM001");
+	testsInError += assertEquals(pacman.position.y, BDD_SCREEN_Y + 1, "PM001");
 
 	pacman.direction = MOVES_DOWN;
 	PACMAN_move(&pacman);
-	testsInError += assertEquals(pacman.position.y,10 , "PM002");
+	testsInError += assertEquals(pacman.position.y, BDD_SCREEN_Y + 2, "PM002");
 
 	pacman.direction = MOVES_LEFT;
 	PACMAN_move(&pacman);
-	testsInError += assertEquals( pacman.position.x, 9, "PM003");
+	testsInError += assertEquals(pacman.position.x, BDD_SCREEN_X + 1, "PM003");
 
 	pacman.direction = MOVES_RIGHT;
 	PACMAN_move(&pacman);
-	testsInError += assertEquals(pacman.position.x, 10, "PM004");
+	testsInError += assertEquals(pacman.position.x, BDD_SCREEN_X + 2, "PM004");
 
+	BDD_clear();
 	return testsInError;
 }
 
@@ -349,7 +350,7 @@ int testPacmanHitsABorder() {
 	testsInError += assertEquals(pacman.status, ALIVE, "PHAB01");
 	testsInError += assertEqualsStatusString(pacman.status, ALIVE, "PHAB01");
 
-        // si il touche un mur 
+    // si il touche un mur 
    
 	testsInError += testPacmanHitsABorderTo(CORNER_TOP_LEFT, "PHAB02");
 	testsInError += testPacmanHitsABorderTo(CORNER_BOTTOM_LEFT, "PHAB03");
@@ -382,8 +383,8 @@ int testPacmanHitsAGhost(){
 
 	Pacman pacman;
 
-	pacman.position.x = 10;
-	pacman.position.y = 10;
+	pacman.position.x = BDD_SCREEN_X + 2;
+	pacman.position.y = BDD_SCREEN_Y + 2;
 	pacman.status = ALIVE;
 
     T6963C_writeAt(pacman.position.x+1, pacman.position.y, GHOST);
@@ -393,7 +394,8 @@ int testPacmanHitsAGhost(){
 
 	testsInError += assertEquals(pacman.status, DEAD, "PHAG03");
 	testsInError += assertEqualsStatusString(pacman.status, DEAD, "PHAG03");
-
+	
+	BDD_clear();
 	return testsInError;
 }
 
@@ -404,8 +406,8 @@ int testPacmanHitsACoin(){
 
 	Pacman pacman;
 
-	pacman.position.x = 10;
-	pacman.position.y = 10;
+	pacman.position.x = BDD_SCREEN_X + 2;
+	pacman.position.y = BDD_SCREEN_Y + 2;
 	pacman.status = ALIVE;
 
     T6963C_writeAt(pacman.position.x+1, pacman.position.y, COIN);
@@ -416,6 +418,7 @@ int testPacmanHitsACoin(){
 	testsInError += assertEquals(pacman.status, EATING, "PHAG03");
 	testsInError += assertEqualsStatusString(pacman.status, EATING, "PHAG03");
 
+	BDD_clear();
 	return testsInError;
 }
 
@@ -489,8 +492,28 @@ int bddPacmanHitsAnObstacle()
 int bddPacmanHitsAGhost()
 {
 	int testsInError = 0;
+	char *testId ="PMO-COIN";
 
-	testsInError += bddPacmanHitsThisObstacle(GHOST, "PMO-GHOST");
+	BddExpectedContent c = {
+			{' ',' ',' ',' ',' ',' ','0','.','.','.'},
+			"..........",
+			"..........",
+			"..........",
+			".........."
+		};
+	
+	Pacman pacman = {MOVES_RIGHT, {BDD_SCREEN_X, BDD_SCREEN_Y}, {BDD_SCREEN_X, BDD_SCREEN_Y}, ALIVE};
+	char n;
+
+	
+	BDD_clear();
+	
+	T6963C_writeAt(BDD_SCREEN_X + 5, BDD_SCREEN_Y, GHOST);
+	for (n = 0; n < 7; n++) {
+		PACMAN_iterate(&pacman, ARROW_NEUTRAL);
+	}
+
+	testsInError = BDD_assert(c, testId);
 
 	return testsInError;
 }
