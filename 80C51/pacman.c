@@ -316,11 +316,28 @@ int testPacmanMoves() {
 	return testsInError;
 }
 
+int testPacmanHitsABorderTo(char obstacle,char *testCode){
+	 
+	 
+   	int testsError;
+   
+	Pacman pacman;
+	pacman.position.x = BDD_SCREEN_X + 2;
+	pacman.position.y = BDD_SCREEN_Y + 2;
+   
+        T6963C_writeAt(pacman.position.x+1, pacman.position.y, obstacle );
+	pacman.direction = MOVES_RIGHT;
+	PACMAN_move(&pacman);	
+	testsError += assertEquals(pacman.position.x, BDD_SCREEN_X + 2, testCode);
+	BDD_clear();
+	return testsError ;     
+   
+}
 // Véifie que le Pacman lorsque qu'il touche un mur ne meure pas et s'arrete
 int testPacmanHitsABorder() {
 	int testsInError = 0;
 	int i;
-
+	char obstacle; 
 
 	Pacman pacman;
     
@@ -332,22 +349,28 @@ int testPacmanHitsABorder() {
 	testsInError += assertEquals(pacman.status, ALIVE, "PHAB01");
 	testsInError += assertEqualsStatusString(pacman.status, ALIVE, "PHAB01");
 
-	// Test Si il touche un mur
-    
-	pacman.position.x = BDD_SCREEN_X + 2;
-	pacman.position.y = BDD_SCREEN_Y + 2;
+        // si il touche un mur 
+   
+	testsInError += testPacmanHitsABorderTo(CORNER_TOP_LEFT, "PHAB02");
+	testsInError += testPacmanHitsABorderTo(CORNER_BOTTOM_LEFT, "PHAB03");
+	testsInError += testPacmanHitsABorderTo(CORNER_TOP_RIGHT, "PHAB04");
+	testsInError += testPacmanHitsABorderTo(CORNER_BOTTOM_RIGHT, "PHAB05");
 
-	pacman.status = ALIVE;
-        T6963C_writeAt(pacman.position.x+1, pacman.position.y, CORNER_TOP_LEFT );
-	for (i = 1 ; i < 17 ;i++){
-	    pacman.direction = MOVES_RIGHT;
-	    PACMAN_move(&pacman);	
-	    testsInError += assertEquals(pacman.position.x, BDD_SCREEN_X + 2, "PHAB2");
-	    BDD_clear();
-	    pacman.position.x = BDD_SCREEN_X +2;
+	testsInError += testPacmanHitsABorderTo(T_TOP_HORIZONTAL, "PHAB06");
+	testsInError += testPacmanHitsABorderTo(T_BOTTOM_HORIZONTAL, "PHAB07");
+	testsInError += testPacmanHitsABorderTo(T_LEFT_VERTICAL, "PHAB08");
+	testsInError += testPacmanHitsABorderTo(T_RIGHT_VERTICAL, "PHAB09");
 
-	    T6963C_writeAt(pacman.position.x+1, pacman.position.y, CORNER_TOP_LEFT+1);
-	}
+	testsInError += testPacmanHitsABorderTo(LINE_TOP_HORIZONTAL, "PHAB10");
+	testsInError += testPacmanHitsABorderTo(LINE_CENTER_HORIZONTAL, "PHAB11");
+	testsInError += testPacmanHitsABorderTo(LINE_BOTTOM_HORIZONTAL, "PHAB12");
+
+	testsInError += testPacmanHitsABorderTo(LINE_LEFT_VERTICAL, "PHAB13");
+	testsInError += testPacmanHitsABorderTo(LINE_CENTER_VERTICAL, "PHAB14");
+	testsInError += testPacmanHitsABorderTo(LINE_RIGHT_VERTICAL, "PHAB15");
+	testsInError += testPacmanHitsABorderTo(CORNER_BOTTOM_LEFT_LEFT, "PHAB16");
+	testsInError += testPacmanHitsABorderTo(CORNER_BOTTOM_RIGHT_RIGHT, "PHAB17");
+	testsInError += testPacmanHitsABorderTo(SPECIAL_P, "PHAB18");
 
 	return testsInError;
 }

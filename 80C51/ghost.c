@@ -293,32 +293,56 @@ int testGhostMoves()
 	return testsInError;
 }
 
-// Véifie que le Ghost, lorsque qu'il touche un mur, ne meure pas et s'arrete
-int testGhostHitsABorder() 
-{
+int testGhostHitsABorderTo(char obstacle,char *testCode){
+	 
+	 
+   	int testsError;
+   
+	Ghost ghost;
+	ghost.position.x = BDD_SCREEN_X + 2;
+	ghost.position.y = BDD_SCREEN_Y + 2;
+   
+        T6963C_writeAt(ghost.position.x+1, ghost.position.y, obstacle );
+	ghost.direction = MOVES_RIGHT;
+	GHOST_move(&ghost);	
+	testsError += assertEquals(ghost.position.x, BDD_SCREEN_X + 2, testCode);
+	BDD_clear();
+	return testsError ;     
+   
+}
+// Véifie que le Pacman lorsque qu'il touche un mur ne meure pas et s'arrete
+int testGhostHitsABorder() {
 	int testsInError = 0;
 	int i;
-	
-	Ghost ghost;
-	   
-	// Test Si il touche un mur
-	ghost.position.x = BDD_SCREEN_X +2;
-	ghost.position.y = BDD_SCREEN_Y +2;
-        T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT);
+	char obstacle; 
 
-	for (i = 1 ; i < 17 ;i++){
-	    ghost.direction = MOVES_RIGHT;
-	    GHOST_move(&ghost);
-	    
-	    testsInError += assertEquals(ghost.position.x, BDD_SCREEN_X +2, "GHAB01");
-	    BDD_clear();
-	    ghost.position.x = BDD_SCREEN_X +2;
-	    T6963C_writeAt(ghost.position.x+1, ghost.position.y, CORNER_TOP_LEFT+1);
-	}
+	Ghost ghost;
+    
+        // si il touche un mur 
+   
+	testsInError += testGhostHitsABorderTo(CORNER_TOP_LEFT, "GHAB02");
+	testsInError += testGhostHitsABorderTo(CORNER_BOTTOM_LEFT, "GHAB03");
+	testsInError += testGhostHitsABorderTo(CORNER_TOP_RIGHT, "GHAB04");
+	testsInError += testGhostHitsABorderTo(CORNER_BOTTOM_RIGHT, "GHAB05");
+
+	testsInError += testGhostHitsABorderTo(T_TOP_HORIZONTAL, "GHAB06");
+	testsInError += testGhostHitsABorderTo(T_BOTTOM_HORIZONTAL, "GHAB07");
+	testsInError += testGhostHitsABorderTo(T_LEFT_VERTICAL, "GHAB08");
+	testsInError += testGhostHitsABorderTo(T_RIGHT_VERTICAL, "GHAB09");
+
+	testsInError += testGhostHitsABorderTo(LINE_TOP_HORIZONTAL, "GHAB10");
+	testsInError += testGhostHitsABorderTo(LINE_CENTER_HORIZONTAL, "GHAB11");
+	testsInError += testGhostHitsABorderTo(LINE_BOTTOM_HORIZONTAL, "GHAB12");
+
+	testsInError += testGhostHitsABorderTo(LINE_LEFT_VERTICAL, "GHAB13");
+	testsInError += testGhostHitsABorderTo(LINE_CENTER_VERTICAL, "GHAB14");
+	testsInError += testGhostHitsABorderTo(LINE_RIGHT_VERTICAL, "GHAB15");
+	testsInError += testGhostHitsABorderTo(CORNER_BOTTOM_LEFT_LEFT, "GHAB16");
+	testsInError += testGhostHitsABorderTo(CORNER_BOTTOM_RIGHT_RIGHT, "GHAB17");
+	testsInError += testGhostHitsABorderTo(SPECIAL_P, "GHAB18");
 
 	return testsInError;
 }
-
 // Véifie que le Ghost vit et passe sur le COIN  
 int testGhostHitsACoin()
 {
