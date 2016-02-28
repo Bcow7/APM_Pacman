@@ -2,7 +2,7 @@
 #include "test.h"
 #include "bdd.h"
 #include "t6963c.h"
-#include "buffer.h"
+
 #include "gameboard.h"
 #include "pacman.h"
 #include "ghost.h"
@@ -393,7 +393,7 @@ int bddGhostHitsThisObstacle(char obstacle, char *testId)
 
 	char n;
 
-	BUFFER_clear();
+	
 	BDD_clear();
 	
 	T6963C_writeAt(BDD_SCREEN_X + 4, BDD_SCREEN_Y, obstacle);
@@ -464,7 +464,7 @@ int bddGhostHitsACoin()
 
 	char n;
 
-	BUFFER_clear();
+	
 	BDD_clear();
 	
 	T6963C_writeAt(BDD_SCREEN_X + 4, BDD_SCREEN_Y, CORNER_TOP_LEFT);

@@ -1,7 +1,6 @@
 #include <mcs51reg.h>
 #include "stdio-t6963c.h"
 #include "test.h"
-#include "buffer.h"
 #include "pacman.h"
 #include "ghost.h"
 #include "keyboard.h"

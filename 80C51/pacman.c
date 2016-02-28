@@ -1,7 +1,7 @@
 #include "test.h"
 #include "bdd.h"
 #include "t6963c.h"
-#include "buffer.h"
+
 #include "gameboard.h"
 #include "pacman.h"
 #include "ghost.h"
@@ -445,7 +445,7 @@ int bddPacmanHitsThisObstacle(char obstacle, char *testId)
 	Pacman pacman = {MOVES_RIGHT, {BDD_SCREEN_X, BDD_SCREEN_Y}, {BDD_SCREEN_X, BDD_SCREEN_Y}, ALIVE};
 	char n;
 
-	BUFFER_clear();
+	
 	BDD_clear();
 	
 	T6963C_writeAt(BDD_SCREEN_X + 5, BDD_SCREEN_Y, obstacle);
@@ -512,7 +512,7 @@ int bddPacmanEatsACoin()
 	Pacman pacman = {MOVES_RIGHT, {BDD_SCREEN_X, BDD_SCREEN_Y}, {BDD_SCREEN_X, BDD_SCREEN_Y}, ALIVE};
 	char n;
 
-	BUFFER_clear();
+	
 	BDD_clear();
 	
 	T6963C_writeAt(BDD_SCREEN_X + 5, BDD_SCREEN_Y, COIN);
@@ -537,7 +537,7 @@ int bddPacmanMovesTurnsAndCatchesACoin() {
 	Pacman pacman = {MOVES_RIGHT, {BDD_SCREEN_X, BDD_SCREEN_Y}, {BDD_SCREEN_X, BDD_SCREEN_Y}, ALIVE};
 	char n;
 
-	BUFFER_clear();
+	
 	BDD_clear();
 	T6963C_writeAt(BDD_SCREEN_X + 6, BDD_SCREEN_Y + 1, COIN);
 
