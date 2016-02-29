@@ -260,7 +260,7 @@ int testPacmanLiveOrDive() {
  * Test si le pacman gagne
  * @param currentDirection, direction courrant du pacman
  */
-int PacmanEatCoinAndWon(){
+int testPacmanEatCoinAndWon(){
 	 
 	int testsInError = 0;
    	Pacman pacman;
@@ -629,7 +629,7 @@ int testPacman() {
 	testsInError += testPacmanHitsABorder();
 	testsInError += testPacmanHitsAGhost();
 	testsInError += testPacmanHitsACoin();
-        testsInError += PacmanEatCoinAndWon();
+        testsInError += testPacmanEatCoinAndWon();
 	
 	
 	// Tests de comportement:
