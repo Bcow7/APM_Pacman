@@ -256,6 +256,31 @@ int testPacmanLiveOrDive() {
 	BDD_clear();
 	return testsInError;
 }
+/**
+ * Test si le pacman gagne
+ * @param currentDirection, direction courrant du pacman
+ */
+int PacmanEatCoinAndWon(){
+	 
+	int testsInError = 0;
+   	Pacman pacman;
+
+	pacman.position.x = BDD_SCREEN_X + 2;
+	pacman.position.y = BDD_SCREEN_Y + 2;
+	pacman.eatenCoins = 23;
+   	pacman.direction = MOVES_RIGHT;
+   
+	T6963C_writeAt(pacman.position.x+1, pacman.position.y, COIN);
+	T6963C_writeAt(pacman.position.x+2, pacman.position.y, COIN);
+	PACMAN_iterate(&pacman, ARROW_NEUTRAL);
+	PACMAN_iterate(&pacman, ARROW_NEUTRAL);
+        PACMAN_iterate(&pacman, ARROW_NEUTRAL);
+   
+ 	testsInError += assertEquals(pacman.eatenCoins, NB_OF_COINS_TO_EAT, "PECAW01");
+        return testsInError;
+}
+
+
 
 /**
  * Test si le pacman tourne vers la bonne direction
@@ -420,7 +445,7 @@ int testPacmanHitsACoin(){
 	pacman.position.y = BDD_SCREEN_Y + 2;
 	pacman.status = ALIVE;
 
-    T6963C_writeAt(pacman.position.x+1, pacman.position.y, COIN);
+	T6963C_writeAt(pacman.position.x+1, pacman.position.y, COIN);
    	pacman.direction = MOVES_RIGHT;
 	PACMAN_move(&pacman);
 	PACMAN_liveOrDie(&pacman);
@@ -604,6 +629,7 @@ int testPacman() {
 	testsInError += testPacmanHitsABorder();
 	testsInError += testPacmanHitsAGhost();
 	testsInError += testPacmanHitsACoin();
+        testsInError += PacmanEatCoinAndWon();
 	
 	
 	// Tests de comportement:
