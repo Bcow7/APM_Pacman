@@ -39,9 +39,14 @@ void play() {
 	    GHOST_iterate(&ghost1);
 
 		pause(20000);
-	} while (pacman.status != DEAD);
+	} while (pacman.status != DEAD &&  pacman.status != WON);
 
-	GMB_display(8, 7, " GAME OVER ");
+	if (pacman.status == WON)
+	{
+		GMB_display(8, 7, " YOU WON! :-) ");
+	} else {
+		GMB_display(8, 7, " GAME OVER ");
+	}
 }
 
 void main(void) {

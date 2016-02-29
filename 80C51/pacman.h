@@ -5,6 +5,8 @@
 #include "main.h"
 #include "stdbool.h"
 
+#define NB_OF_COINS_TO_EAT 25
+
 typedef enum {
 	MOVES_NONE,
 	MOVES_UP,
@@ -16,7 +18,8 @@ typedef enum {
 typedef enum {
 	ALIVE,
 	DEAD,
-	EATING
+	EATING,
+	WON
 } Status;
 
 typedef struct {
@@ -24,6 +27,7 @@ typedef struct {
 	Position position;
 	Position lastPosition;
 	Status status;
+	unsigned char eatenCoins;
 } Pacman;
 
 bool PACMAN_isFreeSpace(unsigned char x, unsigned char y);

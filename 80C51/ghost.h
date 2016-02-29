@@ -16,7 +16,7 @@ typedef struct {
 	Position position;
 	Position lastPosition;
 	GhostStatus status;
-	int countdown; // Temps d'attente avant qu'il commence à chasser
+	unsigned char countdown; // Temps d'attente avant qu'il commence à chasser
 	unsigned char lastPositionWasACoin;
 } Ghost;
 

@@ -94,7 +94,7 @@ void PACMAN_liveOrDie(Pacman *pacman) {
 
    
    // Si le status est déjà DEAD, on ne change pas!
-   if(pacman->status == DEAD)
+   if(pacman->status == DEAD || pacman->status == WON)
       return;
    
 
@@ -137,6 +137,16 @@ void PACMAN_show(Pacman *pacman)
    else 
 
    {
+      // On regarde s'il y a un COIN au nouvel emplacement
+      c = T6963C_readFrom(pacman->position.x, pacman->position.y);
+      if (c == COIN) {
+	 pacman->eatenCoins++;
+      }
+      if (pacman->eatenCoins == NB_OF_COINS_TO_EAT) {
+	 pacman->status = WON;
+      }
+      
+      
       c = T6963C_readFrom(pacman->lastPosition.x, pacman->lastPosition.y);
 
       // On efface l'ancienne position
