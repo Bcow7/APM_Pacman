@@ -267,7 +267,7 @@ int testPacmanEatCoinAndWon(){
 
 	pacman.position.x = BDD_SCREEN_X + 2;
 	pacman.position.y = BDD_SCREEN_Y + 2;
-	pacman.eatenCoins = 23;
+	pacman.eatenCoins = NB_OF_COINS_TO_EAT - 2;
    	pacman.direction = MOVES_RIGHT;
    
 	T6963C_writeAt(pacman.position.x+1, pacman.position.y, COIN);
