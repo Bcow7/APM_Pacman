@@ -5,6 +5,7 @@
 #include "ghost.h"
 #include "keyboard.h"
 #include "gameboard.h"
+#include "t6963c.h"
 
 // PacMan
 
@@ -26,8 +27,9 @@ void play() {
 	Ghost ghost2 = {MOVES_NONE, {17, 9},{17,9}, HUNTER, 25};
 	unsigned char *keyboard = (unsigned char __xdata *) 0x3000;
 	Arrow arrow;
-
-	GMB_draw(PACMAN_LIMIT_X0, PACMAN_LIMIT_Y0, PACMAN_LIMIT_X1, PACMAN_LIMIT_Y1);
+	
+	GMB_DrawLab(26,PACMAN_LIMIT_X0, PACMAN_LIMIT_Y0,PACMAN_LIMIT_X1, PACMAN_LIMIT_Y1);
+	
 	
 	do {
 		arrow = KEYBOARD_readArrows(keyboard);
