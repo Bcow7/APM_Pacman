@@ -5,7 +5,7 @@
 #include "main.h"
 #include "stdbool.h"
 
-#define NB_OF_COINS_TO_EAT 231 // nombre de pièce 231
+#define NB_OF_COINS_TO_EAT 5 // nombre de pièce 231
 
 typedef enum {
 	MOVES_NONE,
