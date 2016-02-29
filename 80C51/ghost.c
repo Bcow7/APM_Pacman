@@ -76,7 +76,7 @@ void GHOST_move(Ghost *ghost) {
 	   ghost->position.x = newPosition.x;
 	   ghost->position.y = newPosition.y;
 	} 
-	else 
+	else if (ghost->direction != MOVES_NONE)
 	{
 	   // C'est un mur, il faut changer de direction
 	   while (currentDirection == ghost->direction)
